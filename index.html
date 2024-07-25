@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clipboard App</title>
+  <style>
+    /* Add some basic styles */
+    #clipboard-container {
+      margin-top: 20px;
+    }
+    .clipboard-item {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Clipboard App</h1>
+
+  <!-- Registration Form -->
+  <div id="registration-section">
+    <h2>Register</h2>
+    <form id="registration-form">
+      <input type="email" id="register-email" placeholder="Email" required>
+      <input type="password" id="register-password" placeholder="Password" required>
+      <button type="submit">Register</button>
+    </form>
+  </div>
+
+  <!-- Login Form -->
+  <div id="login-section">
+    <h2>Login</h2>
+    <form id="login-form">
+      <input type="email" id="email" placeholder="Email" required>
+      <input type="password" id="password" placeholder="Password" required>
+      <button type="submit">Login</button>
+    </form>
+  </div>
+
+  <!-- Clipboard Display -->
+  <div id="clipboard-container">
+    <h2>Your Clipboard</h2>
+    <div id="clipboard-list"></div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
