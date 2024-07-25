@@ -23,7 +23,10 @@ document.getElementById('registration-form').addEventListener('submit', async (e
       const response = await window.electron.ipcRenderer.loginUser(email, password);
       console.log('Logged in:', response);
       localStorage.setItem('accessToken', response.session.access_token);
-      fetchClipboardData();
+      setInterval(async () => {
+        fetchClipboardData();
+      },1000)
+     
     } catch (error) {
       console.error('Login error:', error.message);
     }
@@ -32,17 +35,15 @@ document.getElementById('registration-form').addEventListener('submit', async (e
   async function fetchClipboardData() {
     try {
       const data = await window.electron.ipcRenderer.fetchClipboardData();
-      console.log('Clipboard data:', data);
   
       const clipboardList = document.getElementById('clipboard-list');
-      clipboardList.innerHTML = ''; // Clear existing content
+      clipboardList.innerHTML = ''; 
   
       data.forEach(item => {
         const itemElement = document.createElement('div');
         itemElement.className = 'clipboard-item';
         itemElement.innerHTML = `
           <p><strong>Content:</strong> ${item.content}</p>
-          <p><strong>Image URL:</strong> ${item.image_url || 'None'}</p>
           <p><strong>Created At:</strong> ${new Date(item.created_at).toLocaleString()}</p>
         `;
         clipboardList.appendChild(itemElement);
