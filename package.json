@@ -10,7 +10,12 @@
   "description": "",
   "dependencies": {
     "@supabase/supabase-js": "^2.44.4",
+    "base64-arraybuffer": "^1.0.2",
     "dotenv": "^16.4.5",
-    "electron": "^31.3.0"
+    "electron": "^31.3.0",
+    "electron-store": "^10.0.0",
+    "fs": "^0.0.1-security",
+    "util": "^0.12.5",
+    "uuid": "^10.0.0"
   }
 }

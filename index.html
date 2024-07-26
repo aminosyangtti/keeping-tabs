@@ -15,12 +15,23 @@
       margin-bottom: 10px;
       border-radius: 5px;
     }
+
+    .clipboard-content img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .clipboard-content p {
+      margin: 0;
+    }
   </style>
 </head>
 <body>
-  <h1>Clipboard App</h1>
+  <h1>Keeping Tabs</h1>
 
-  <!-- Registration Form -->
+  <div id="auth-container">
   <div id="registration-section">
     <h2>Register</h2>
     <form id="registration-form">
@@ -38,6 +49,7 @@
       <input type="password" id="password" placeholder="Password" required>
       <button type="submit">Login</button>
     </form>
+  </div>
   </div>
 
   <!-- Clipboard Display -->
