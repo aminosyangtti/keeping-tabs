@@ -86,44 +86,49 @@ ipcMain.handle('upload-clipboard-data', async() => {
         title: 'Possible Password Detected',
         message: 'The copied text appears to be a password. Do you want to save it?',
       })
-        if (result.response === 0) { // Yes
+        if (result.response === 0) { 
           dialog.showMessageBox({
             type: 'info',
             title: 'Saving...',
             message: 'No worries! Your password will be encrypted before storing it.',
           });
+          uploadeData(currentClipboardContent)
+          } else {
 
-          
-            const encryptedData = CryptoJS.AES.encrypt(currentClipboardContent, process.env.SECRET_KEY).toString();
-        
-            try {
-              const { data, error } = await supabase
-                .from('clipboard')
-                .insert({ 
-                  content: encryptedData,
-                  user_id: userId
-                 })
-                .select();
-      
-                 lastClipboardTextId = data[0].id;
-                 deleteMatchingItems(lastClipboardTextId)
-      
-        
-              if (error) throw error;
-              console.log('Clipboard content added:', encryptedData);
-            } catch (error) {
-              console.error('Error adding clipboard content:', error.message);
-            }
-          }  
+          } 
+
+        } else {
+          uploadeData(currentClipboardContent)
+
 
         }
       
     }
-  
-  
-   
 
 })
+
+async function uploadeData(currentClipboardContent) {
+  const encryptedData = CryptoJS.AES.encrypt(currentClipboardContent, process.env.SECRET_KEY).toString();
+        
+  try {
+    const { data, error } = await supabase
+      .from('clipboard')
+      .insert({ 
+        content: encryptedData,
+        user_id: userId
+       })
+      .select();
+
+       lastClipboardTextId = data[0].id;
+       deleteMatchingItems(lastClipboardTextId)
+
+
+    if (error) throw error;
+    console.log('Clipboard content added:', encryptedData);
+  } catch (error) {
+    console.error('Error adding clipboard content:', error.message);
+  }
+}
 
 ipcMain.handle('fetch-clipboard-data', async () => {
 
@@ -460,15 +465,16 @@ ipcMain.handle('fetch-clipboard-data', async () => {
     });
 
     function isPassword(text) {
-      // Common password patterns
+      // const lengthCriteria = text.length >= 8;
+      // const varietyCriteria = /[A-Z]/.test(text) && /[a-z]/.test(text) && /[0-9]/.test(text) && /[!@#$%^&*()_+]/.test(text);
+  
+  
       const passwordPatterns = [
-        /[a-zA-Z0-9!@#$%^&*()_+]{8,}/, // at least 8 characters with mixed content
-        /password/i, // contains the word 'password'
-        /1234|abcd/i // contains common sequences
+        /password/i, 
+      
       ];
-    
-      // Check against the patterns
-      return passwordPatterns.some(pattern => pattern.test(text));
+      return passwordPatterns.some(pattern => pattern.test(text)) 
+
     }
 
     

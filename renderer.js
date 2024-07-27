@@ -259,14 +259,14 @@ async function displayPreview(url, itemId, itemElement) {
     </div>
   `;
   } else {
-    // window.electron.ipcRenderer.deleteBrokenItem(itemId);
+    window.electron.ipcRenderer.deleteBrokenItem(itemId);
 
-    `
-    <div class="clipboard-content" style="padding: 10px">
-       <img src="${url}" alt="Clipboard Image" style="max-width: 300px;"/>
-        <p><strong>Image URL:</strong> ${url}</p>
+    // `
+    // <div class="clipboard-content" style="padding: 10px">
+    //    <img src="${url}" alt="Clipboard Image" style="max-width: 300px;"/>
+    //     <p><strong>Image URL:</strong> ${url}</p>
         
-    `;
+    // `;
   }
 } catch (error) {
   console.error(error)
