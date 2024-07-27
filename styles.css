@@ -293,6 +293,11 @@ html, body {
     filter:brightness(70%)
   }
 
+  img {
+    max-width: 100%; /* Ensures image scales properly */
+    height: auto; /* Maintains aspect ratio */
+  }
+
 
 
   }

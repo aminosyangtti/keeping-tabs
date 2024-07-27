@@ -16,6 +16,7 @@
     "electron": "^31.3.0",
     "electron-store": "^10.0.0",
     "fs": "^0.0.1-security",
+    "open-graph-scraper": "^6.7.0",
     "util": "^0.12.5",
     "uuid": "^10.0.0"
   }

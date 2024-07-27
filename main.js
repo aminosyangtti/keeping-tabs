@@ -11,6 +11,7 @@ const { decode } = require('base64-arraybuffer');
 const pipeline = promisify(require('stream').pipeline);
 const crypto = require('crypto');
 const CryptoJS = require('crypto-js')
+const ogs = require('open-graph-scraper');
 
 
 let store;
@@ -38,8 +39,9 @@ function createWindow() {
     resizable: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
-      nodeIntegration: true,
+      nodeIntegration: false,
       contextIsolation: true,
+      webSecurity: false
     },
   });
 
@@ -398,4 +400,21 @@ ipcMain.handle('fetch-clipboard-data', async () => {
       throw new Error('Decryption failed');
     }
   }
+
+  ipcMain.handle('fetch-metadata', async (event, url) => {
+  
+      const options = { url };
+      try {
+        const { error, result } = await ogs(options);
+        if (error) {
+          console.error('Error fetching metadata:', error);
+          return null;
+        }
+        console.log(result)
+        return result;
+      } catch (error) {
+        console.error('Error fetching metadata:', error.message);
+        return null;
+      }
+    });
   
