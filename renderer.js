@@ -106,16 +106,12 @@ registrationSection.addEventListener('submit', async (event) => {
 
   const userId = window.localStorage.getItem('userId');
   const accessToken = window.localStorage.getItem('accessToken');
-  const deleteIcon = '<svg id="delete-icon" width="25px" height="25px" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><defs><style> .cls-1 { fill: #9f4c4c; fill-rule: evenodd; } </style></defs><path class="cls-1" d="M100,390a30,30,0,1,1,30-30A30,30,0,0,1,100,390Zm18-30a4,4,0,0,1-4,4H86a4,4,0,0,1,0-8h28A4,4,0,0,1,118,360Z" id="remove" transform="translate(-70 -330)"></path></g></svg>'
-
 
 
   async function fetchClipboardData() {
     console.log('fetching...')
    
     try {
-
-
      
       const data = await window.electron.ipcRenderer.fetchClipboardData();
   
@@ -123,15 +119,10 @@ registrationSection.addEventListener('submit', async (event) => {
       clipboardList.innerHTML = ''; 
 
       data.forEach(item => {
-        // console.log(item.content)
-        // console.log(userId)
-        // console.log(accessToken)
-        // console.log(item.user_id)
+
         if (userId == item.user_id) {
-          // console.log('matching...')
           const itemElement = document.createElement('div');
           itemElement.className = 'clipboard-item';
-          const deleteID = generateUUID()
           let contentHTML = '';
         if (item.image_url) {
           contentHTML = `
@@ -143,13 +134,14 @@ registrationSection.addEventListener('submit', async (event) => {
 
           if(isHexCode(item.content)) {
             contentHTML = `<div style="margin: 0; padding: 0; display:flex; justify-content: center; align-items: center; height: 100%; width: 100%; background-color: ${item.content};">${item.content}</div>`;
+            copy(item.content, itemElement)
+
           } else {
           contentHTML = `<div style="padding: 10px">${item.content}</div>`;
           copy(item.content, itemElement)
           }
         }
   
-        // Build the HTML structure for the item
         itemElement.innerHTML = `
           <div class="clipboard-content">
             ${contentHTML} 
@@ -163,7 +155,6 @@ registrationSection.addEventListener('submit', async (event) => {
           event.preventDefault();
           
           if (item.id) {
-            // Send ID to main process
             console.log(item.id)
             window.electron.ipcRenderer.deleteItem(item.id);
           }

@@ -10,6 +10,8 @@ const { promisify } = require('util');
 const { decode } = require('base64-arraybuffer');
 const pipeline = promisify(require('stream').pipeline);
 const crypto = require('crypto');
+const CryptoJS = require('crypto-js')
+
 
 let store;
 let win;
@@ -69,17 +71,20 @@ app.on('window-all-closed', () => {
 
 
 ipcMain.handle('upload-clipboard-data', async() => {
-  handleClipboardImage()
+  // handleClipboardImage()
   const currentClipboardContent = clipboard.readText();
   
     if (currentClipboardContent && currentClipboardContent !== lastClipboardContent) {
       lastClipboardContent = currentClipboardContent;
+      const encryptedData = CryptoJS.AES.encrypt(currentClipboardContent, process.env.SECRET_KEY).toString();
   
       try {
+
+        
         const { data, error } = await supabase
           .from('clipboard')
           .insert({ 
-            content: currentClipboardContent,
+            content: encryptedData,
             user_id: userId
            })
           .select();
@@ -89,7 +94,7 @@ ipcMain.handle('upload-clipboard-data', async() => {
 
   
         if (error) throw error;
-        console.log('Clipboard content added:', currentClipboardContent);
+        console.log('Clipboard content added:', encryptedData);
       } catch (error) {
         console.error('Error adding clipboard content:', error.message);
       }
@@ -98,6 +103,8 @@ ipcMain.handle('upload-clipboard-data', async() => {
 })
 
 ipcMain.handle('fetch-clipboard-data', async () => {
+
+ 
   try {
     const { data, error } = await supabase
       .from('clipboard')
@@ -106,7 +113,25 @@ ipcMain.handle('fetch-clipboard-data', async () => {
 
     if (error) throw error;
     // console.log(data)
-    return data;
+
+    const decryptedData = data.map(row => {
+      try {
+        return {
+          id: row.id,
+          user_id: row.user_id,
+          content: decrypt(row.content)
+        };
+      } catch (decryptionError) {
+        console.error(`Error decrypting row with id ${row.id}:`, decryptionError.message);
+        return {
+          id: row.id,
+          user_id: row.user_id,
+          content: null, // or some indication of decryption failure
+        };
+      }
+    });
+
+    return decryptedData;
   } catch (error) {
     console.error('Error fetching clipboard data:', error.message);
     throw error;
@@ -259,38 +284,38 @@ ipcMain.handle('fetch-clipboard-data', async () => {
 
   async function deleteMatchingItems(lastClipboardTextId) {
     const currentClipboardContent = clipboard.readText();
-  
-    try {
-      // Fetch items from the database that match the clipboard content
-      let { data: items, error } = await supabase
-        .from('clipboard')
-        .select('*')
-        .eq('user_id', userId)
-        .like('content', `%${currentClipboardContent}%`);
-  
-      if (error) throw error;
-  
-      // Delete the matching items
-      const itemIds = items
-      .map(item => item.id)
-      .filter(id => id !== lastClipboardTextId);
-      if (itemIds.length > 0) {
-        const { error: deleteError } = await supabase
-          .from('clipboard')
-          .delete()
-          .in('id', itemIds)
-          .eq('user_id', userId);
-  
-        if (deleteError) throw deleteError;
-        console.log('Deleted matching items:', itemIds);
-      } else {
-        console.log('No matching items found.');
-      }
-    } catch (error) {
-      console.error('Error deleting matching items:', error.message);
-    }
-  }
 
+  try {
+    let { data: items, error } = await supabase
+      .from('clipboard')
+      .select('*')
+      .eq('user_id', userId);
+
+    if (error) throw error;
+
+    const matchingItems = items
+      .filter(item => decrypt(item.content) === currentClipboardContent)
+      .filter(item => item.id !== lastClipboardTextId);
+
+    const itemIds = matchingItems.map(item => item.id);
+
+    if (itemIds.length > 0) {
+      const { error: deleteError } = await supabase
+        .from('clipboard')
+        .delete()
+        .in('id', itemIds)
+        .eq('user_id', userId);
+
+      if (deleteError) throw deleteError;
+
+      console.log('Deleted matching items:', itemIds);
+    } else {
+      console.log('No matching items found.');
+    }
+  } catch (error) {
+    console.error('Error deleting matching items:', error.message);
+  }
+}
 
 
   ipcMain.on('delete-item', async (event, itemId) => {
@@ -337,21 +362,24 @@ ipcMain.handle('fetch-clipboard-data', async () => {
       const { data, error } = await supabase
         .from('clipboard')
         .delete()
-        .lt('created_at', oneWeekAgo.toISOString()); 
+        .lt('created_at', oneWeekAgo.toISOString())
+        .eq('user_id', userId); 
       if (error) throw error;
       console.log('Old items deleted from database:', data);
       } else if (result.response === 2) {
         const { data, error } = await supabase
         .from('clipboard')
         .delete()
-        .lt('created_at', oneMonthAgo.toISOString()); 
+        .lt('created_at', oneMonthAgo.toISOString())
+        .eq('user_id', userId);
       if (error) throw error;
       console.log('Old items deleted from database:', data);
       } else if (result.response === 0) {
         const { data, error } = await supabase
         .from('clipboard')
         .delete()
-        .lt('created_at', oneDayAgo.toISOString()); 
+        .lt('created_at', oneDayAgo.toISOString())
+        .eq('user_id', userId);
       if (error) throw error;
       console.log('Old items deleted from database:', data);
       }
@@ -359,4 +387,15 @@ ipcMain.handle('fetch-clipboard-data', async () => {
       console.error('Error deleting old items:', error.message);
     }
   });
+
+  function decrypt(encryptedData) {
+    try {
+      const bytes = CryptoJS.AES.decrypt(encryptedData, process.env.SECRET_KEY);
+      const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
+      return decryptedData;
+    } catch (error) {
+      console.error('Error decrypting data:', error.message);
+      throw new Error('Decryption failed');
+    }
+  }
   
