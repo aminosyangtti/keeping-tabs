@@ -1,0 +1,228 @@
+
+html, body {
+    margin: 0;
+    overflow: hidden;
+    width: 100%;
+    height: 100%; 
+    font-family: Arial, sans-seriF;
+    display: flex;
+    flex-direction: column;
+
+  }
+  html {
+    /* background: transparent; */
+
+  }
+  
+  body {
+    overflow: hidden;
+    color: #f8f8f8;
+     /* color: #25313e; */
+    background-color: #1c1c1c;
+    /* background-color: #f8f8f8; */
+    display: flex;
+    align-items: center;
+
+  }
+
+  #title-bar {
+    display: flex;
+    justify-content: space-between;
+    background-color: #00000000;
+    padding: 20px;
+    flex-direction: row;
+    width: 100%;
+
+  }
+  #title {
+    text-wrap: nowrap;
+    padding-left: 20px;
+    color: #b6794e;
+    /* color: #4e8cb7; for light mode */
+    font-weight: bold;
+  }
+  #window-controls {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: flex-end;
+    padding-right: 20px;
+}
+  #minimize-button {
+    justify-content: flex-end;
+    display: flex;
+    flex-direction: column;
+}
+
+div#close-button {
+    padding-left: 10px;
+}
+  
+#auth-container {
+    
+    
+}
+#registration-section {
+    
+}
+
+#registration-form {
+    display: flex;
+    flex-direction: column;
+    align-items:center;
+}
+
+#registration-form input{
+   margin-top: 10px;
+   margin-bottom: 10px;
+   width: 100%;
+}
+
+#registration-form button {
+    margin-top: 10px;
+    margin-bottom: 10px;    
+ }
+
+ #login-section {
+    
+ }
+
+ #register-button {
+    font-size: smaller;
+    color: #b6794e;
+    /* color: #4e8cb7; for light mode */
+    cursor: pointer;
+}
+
+#login-form {
+    display: flex;
+    flex-direction: column;
+    align-items:center;
+}
+
+#login-form input{
+   margin-top: 10px;
+   margin-bottom: 10px;
+   width: 100%;
+   
+}
+
+#login-form button {
+    margin-top: 10px;
+    margin-bottom: 10px;    
+ }
+
+
+
+#clipboard-container {
+    margin-top: 20px;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: hidden;
+   
+  }
+  .clipboard-item {
+    /* border: 1px solid #ccc; */
+    /* border: 1px solid #202020; */
+    background-color: #202020;
+    /* background-color: #f1f1f1; */
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    height: 100px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center; */
+    
+    
+    
+  }
+#clipboard-list {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 10px;
+    width: 200px;
+    overflow-y: scroll;
+}
+
+#clipboard-list::-webkit-scrollbar {
+    display: none;
+    /* width: 3px;
+    padding: 5px; */
+  }
+
+  /* #clipboard-list::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0); 
+  }
+#clipboard-list::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.096); 
+    border-radius: 5px;
+}
+#clipboard-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.7);
+  }
+   */
+
+
+  .clipboard-content img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .clipboard-content div {
+    margin: 0;
+    white-space: normal; 
+    word-wrap: break-word;
+    font-size: 5vw
+    
+  }
+
+
+  .hover-button {
+
+    border: none;
+    cursor: pointer;
+    filter: brightness(70%);
+  }
+  
+  .hover-button:hover {
+    filter: brightness(100%);
+  }
+  
+  .hover-enlarge {
+  
+    transition: transform 0.05s ease;
+  }
+  .hover-enlarge:hover {
+    transform: scale(1.05);
+  }
+
+
+  .hidden {
+    display: none;
+  }
+
+  /* Light mode styles */
+  /* @media (prefers-color-scheme: light) {
+    #app {
+      background-color: rgba(255, 255, 255, 0.9); 
+      color: #000; 
+    }
+    #title-bar {
+      background-color: rgba(255, 255, 255, 0.9);
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #app {
+      background-color: rgba(30, 30, 30, 0); 
+      color: #fff; 
+    }
+    #title-bar {
+      background-color: rgba(30, 30, 30, 0.9);
+    }
+  }

@@ -12,9 +12,9 @@ const pipeline = promisify(require('stream').pipeline);
 const crypto = require('crypto');
 
 let store;
+let win;
 
 let userId;
-let win;
 let lastClipboardContent = '';
 let lastImageHash = '';
 const SUPABASE_URL = process.env.SUPABASE_URL;
@@ -28,9 +28,9 @@ function createWindow() {
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width, height } = primaryDisplay.workAreaSize;
   win = new BrowserWindow({
-    width: 238,
-    height: 1950,
-    x: width - 238,
+    width: width * 0.15,
+    height: height,
+    x: width - (width * 0.15),
     y: 10,
     frame: false,
     resizable: false,
@@ -45,6 +45,7 @@ function createWindow() {
   if (process.env.NODE_ENV === 'development') {
     win.webContents.openDevTools({mode:'undocked'});
   }
+  win.webContents.openDevTools({mode:'undocked'});
 }
 
 app.on('ready', async () => {
@@ -68,6 +69,7 @@ app.on('window-all-closed', () => {
 
 
 ipcMain.handle('upload-clipboard-data', async() => {
+  handleClipboardImage()
   const currentClipboardContent = clipboard.readText();
   
     if (currentClipboardContent && currentClipboardContent !== lastClipboardContent) {
@@ -82,7 +84,7 @@ ipcMain.handle('upload-clipboard-data', async() => {
            });
   
         if (error) throw error;
-        console.log('Clipboard content added:', data);
+        console.log('Clipboard content added:', currentClipboardContent);
       } catch (error) {
         console.error('Error adding clipboard content:', error.message);
       }
@@ -98,6 +100,7 @@ ipcMain.handle('fetch-clipboard-data', async () => {
       .order('created_at', { ascending: false }); 
 
     if (error) throw error;
+    // console.log(data)
     return data;
   } catch (error) {
     console.error('Error fetching clipboard data:', error.message);
@@ -126,26 +129,6 @@ ipcMain.handle('fetch-clipboard-data', async () => {
       throw error;
     }
   });
-  function deleteFolderContents(folderPath) {
-    fs.readdir(folderPath, (err, files) => {
-      if (err) {
-        console.error(`Error reading folder ${folderPath}:`, err.message);
-        return;
-      }
-  
-      files.forEach(file => {
-        const filePath = path.join(folderPath, file);
-        fs.unlink(filePath, err => {
-          if (err) {
-            console.error(`Error deleting file ${filePath}:`, err.message);
-          } else {
-            console.log(`Successfully deleted file ${filePath}`);
-          }
-        });
-      });
-    });
-  }
-
 
 
   async function autoLogin() {
@@ -155,14 +138,16 @@ ipcMain.handle('fetch-clipboard-data', async () => {
     if (authToken && refreshToken) {
       try {
         const { data, error } = await supabase.auth.setSession({ access_token: authToken, refresh_token: refreshToken });
+        // console.log(data.user.id)
   
         if (error) throw error;
-  
-        console.log('User logged in automatically');
+
         win.webContents.send('auto-login-success', {
           accessToken: authToken,
           userId: data.user.id 
         });
+        console.log('User logged in automatically');
+
         userId = data.user.id
       } catch (error) {
         console.error('Automatic login failed:', error.message);
@@ -192,8 +177,32 @@ ipcMain.handle('fetch-clipboard-data', async () => {
   });
   
 
+  function deleteFolderContents(folderPath) {
+    fs.readdir(folderPath, (err, files) => {
+      if (err) {
+        console.error(`Error reading folder ${folderPath}:`, err.message);
+        return;
+      }
+  
+      files.forEach(file => {
+        const filePath = path.join(folderPath, file);
+        fs.unlink(filePath, err => {
+          if (err) {
+            console.error(`Error deleting file ${filePath}:`, err.message);
+          } else {
+            console.log(`Successfully deleted file ${filePath}`);
+          }
+        });
+      });
+    });
+  }
+
+
  async function handleClipboardImage() {
   const currentClipboardImage = clipboard.readImage();
+
+  // console.log(currentClipboardImage)
+  
     if (!currentClipboardImage.isEmpty()) {
       const imageBuffer = currentClipboardImage.toPNG();
       const imageId = uuidv4();
@@ -232,7 +241,13 @@ ipcMain.handle('fetch-clipboard-data', async () => {
         }
       } else {
         console.log('No change detected in clipboard image.');
-        deleteFolderContents(folderPath);
+        const filePath = path.join(__dirname, `images/${imageId}.png`);
+        // fs.unlink(filePath, err => {
+        //   if (err) {
+        //     console.error(`Error deleting file ${filePath}:`, err.message);
+        //   } else {
+        //     console.log(`Successfully deleted file ${filePath}`);
+        //   }})
       }
     }
   }

@@ -4,57 +4,44 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Clipboard App</title>
-  <style>
-    /* Add some basic styles */
-    #clipboard-container {
-      margin-top: 20px;
-    }
-    .clipboard-item {
-      border: 1px solid #ccc;
-      padding: 10px;
-      margin-bottom: 10px;
-      border-radius: 5px;
-    }
-
-    .clipboard-content img {
-      max-width: 100%;
-      height: auto;
-      display: block;
-      margin-bottom: 10px;
-    }
-
-    .clipboard-content p {
-      margin: 0;
-    }
-  </style>
-</head>
+  <link rel="stylesheet" href="styles.css"> </head>
 <body>
-  <h1>Keeping Tabs</h1>
+  <div id="title-bar">
+    <div id="title">Keeping Tabs</div>
+    <div id="window-controls">
+      <div id="minimize-button" class="hover-button">_</div>
+    <div id="close-button" class="hover-button">X</div>
+    </div>
+    
+  </div> 
+
+ 
 
   <div id="auth-container">
-  <div id="registration-section">
-    <h2>Register</h2>
+  <div id="registration-section" class="hidden">
+    <h2>Sign up</h2>
     <form id="registration-form">
       <input type="email" id="register-email" placeholder="Email" required>
       <input type="password" id="register-password" placeholder="Password" required>
-      <button type="submit">Register</button>
+      <button type="submit" >Sign up</button>
     </form>
   </div>
 
   <!-- Login Form -->
   <div id="login-section">
-    <h2>Login</h2>
+    <h3>Login</h3>
     <form id="login-form">
       <input type="email" id="email" placeholder="Email" required>
       <input type="password" id="password" placeholder="Password" required>
       <button type="submit">Login</button>
+      <div id="register-button" class="hover-button">Sign up here</div>
     </form>
   </div>
   </div>
 
   <!-- Clipboard Display -->
-  <div id="clipboard-container">
-    <h2>Your Clipboard</h2>
+  <div id="clipboard-container" class="hidden">
+    <h3>Your Clipboard</h3>
     <div id="clipboard-list"></div>
   </div>
 
