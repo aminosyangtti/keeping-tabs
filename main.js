@@ -41,7 +41,7 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
       contextIsolation: true,
-      webSecurity: false
+      webSecurity: true
     },
   });
 
@@ -75,32 +75,53 @@ app.on('window-all-closed', () => {
 ipcMain.handle('upload-clipboard-data', async() => {
   // handleClipboardImage()
   const currentClipboardContent = clipboard.readText();
-  
-    if (currentClipboardContent && currentClipboardContent !== lastClipboardContent) {
-      lastClipboardContent = currentClipboardContent;
-      const encryptedData = CryptoJS.AES.encrypt(currentClipboardContent, process.env.SECRET_KEY).toString();
-  
-      try {
 
+  if (currentClipboardContent && currentClipboardContent !== lastClipboardContent) {
+    lastClipboardContent = currentClipboardContent;
+    if (isPassword(currentClipboardContent)) {
+  
+      const result = await dialog.showMessageBox({
+        type: 'error',
+        buttons: ['Yes', 'No'],
+        title: 'Possible Password Detected',
+        message: 'The copied text appears to be a password. Do you want to save it?',
+      })
+        if (result.response === 0) { // Yes
+          dialog.showMessageBox({
+            type: 'info',
+            title: 'Saving...',
+            message: 'No worries! Your password will be encrypted before storing it.',
+          });
+
+          
+            const encryptedData = CryptoJS.AES.encrypt(currentClipboardContent, process.env.SECRET_KEY).toString();
         
-        const { data, error } = await supabase
-          .from('clipboard')
-          .insert({ 
-            content: encryptedData,
-            user_id: userId
-           })
-          .select();
+            try {
+              const { data, error } = await supabase
+                .from('clipboard')
+                .insert({ 
+                  content: encryptedData,
+                  user_id: userId
+                 })
+                .select();
+      
+                 lastClipboardTextId = data[0].id;
+                 deleteMatchingItems(lastClipboardTextId)
+      
+        
+              if (error) throw error;
+              console.log('Clipboard content added:', encryptedData);
+            } catch (error) {
+              console.error('Error adding clipboard content:', error.message);
+            }
+          }  
 
-           lastClipboardTextId = data[0].id;
-           deleteMatchingItems(lastClipboardTextId)
-
-  
-        if (error) throw error;
-        console.log('Clipboard content added:', encryptedData);
-      } catch (error) {
-        console.error('Error adding clipboard content:', error.message);
-      }
+        }
+      
     }
+  
+  
+   
 
 })
 
@@ -345,6 +366,26 @@ ipcMain.handle('fetch-clipboard-data', async () => {
     }
   });
 
+  ipcMain.on('delete-broken-item', async (event, itemId) => {
+    try {
+      dialog.showMessageBox({
+        type: 'info',
+        title: 'Broken Link Deleted',
+        message: `A copied broken link was automatically deleted.`,
+      });
+      const { error: deleteError } = await supabase
+        .from('clipboard')
+        .delete()
+        .eq('id', itemId)
+        .eq('user_id', userId);
+
+      if (deleteError) throw deleteError;
+      console.log(`Item ${itemId} deleted from database`);
+      } catch (error) {
+      console.error('Error deleting item:', error.message);
+    }
+  });
+
   ipcMain.on('delete-old-items', async (event) => {
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
@@ -417,4 +458,18 @@ ipcMain.handle('fetch-clipboard-data', async () => {
         return null;
       }
     });
+
+    function isPassword(text) {
+      // Common password patterns
+      const passwordPatterns = [
+        /[a-zA-Z0-9!@#$%^&*()_+]{8,}/, // at least 8 characters with mixed content
+        /password/i, // contains the word 'password'
+        /1234|abcd/i // contains common sequences
+      ];
+    
+      // Check against the patterns
+      return passwordPatterns.some(pattern => pattern.test(text));
+    }
+
+    
   

@@ -125,7 +125,7 @@ registrationSection.addEventListener('submit', async (event) => {
           itemElement.className = 'clipboard-item';
           let contentHTML = '';
         if (isValidURL(item.content)) {
-          displayPreview(item.content, itemElement)
+          displayPreview(item.content, item.id, itemElement)
           copy(item.content, itemElement)
 
         } if(isHexCode(item.content)) {
@@ -239,7 +239,7 @@ function isValidURL(str) {
 }
 
 
-async function displayPreview(url, itemElement) {
+async function displayPreview(url, itemId, itemElement) {
 
   try {
 
@@ -255,11 +255,18 @@ async function displayPreview(url, itemElement) {
    <div class="clipboard-content" style="padding: 10px">
       <img src="${imageUrl}" alt="Preview Image" />
       <p>${title}</p>
-      <a href="${imageUrl}" target="_blank">Open Link</a>
+      <a href="${url}" target="_blank">Open Link</a>
     </div>
   `;
   } else {
-    
+    // window.electron.ipcRenderer.deleteBrokenItem(itemId);
+
+    `
+    <div class="clipboard-content" style="padding: 10px">
+       <img src="${url}" alt="Clipboard Image" style="max-width: 300px;"/>
+        <p><strong>Image URL:</strong> ${url}</p>
+        
+    `;
   }
 } catch (error) {
   console.error(error)

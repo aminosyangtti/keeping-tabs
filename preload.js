@@ -8,6 +8,7 @@ contextBridge.exposeInMainWorld('electron', {
     loginUser: (email, password) => ipcRenderer.invoke('login-user', { email, password }),
     uploadClipboardData: () => ipcRenderer.invoke('upload-clipboard-data'),
     deleteItem: (itemId) => ipcRenderer.send('delete-item', itemId),
+    deleteBrokenItem: (itemId) => ipcRenderer.send('delete-broken-item', itemId),
     deleteOldItems: () => ipcRenderer.send('delete-old-items')
   },
   onAutoLoginSuccess: (callback) => ipcRenderer.on('auto-login-success', (event, data) => callback(data)),
