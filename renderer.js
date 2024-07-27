@@ -140,8 +140,13 @@ registrationSection.addEventListener('submit', async (event) => {
           `;
           copy(item.image_url, itemElement)
         } else {
-          contentHTML = `<div>${item.content}</div>`;
+
+          if(isHexCode(item.content)) {
+            contentHTML = `<div style="margin: 0; padding: 0; display:flex; justify-content: center; align-items: center; height: 100%; width: 100%; background-color: ${item.content};">${item.content}</div>`;
+          } else {
+          contentHTML = `<div style="padding: 10px">${item.content}</div>`;
           copy(item.content, itemElement)
+          }
         }
   
         // Build the HTML structure for the item
@@ -234,4 +239,9 @@ function generateUUID() {
       const v = c === 'x' ? r : (r & 0x3 | 0x8);
       return v.toString(16);
   });
+}
+
+function isHexCode(str) {
+  const hexRegex = /^#([0-9A-F]{3}|[0-9A-F]{6})$/i;
+  return hexRegex.test(str);
 }
