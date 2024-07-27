@@ -81,7 +81,12 @@ ipcMain.handle('upload-clipboard-data', async() => {
           .insert({ 
             content: currentClipboardContent,
             user_id: userId
-           });
+           })
+          .select();
+
+           lastClipboardTextId = data[0].id;
+           deleteMatchingItems(lastClipboardTextId)
+
   
         if (error) throw error;
         console.log('Clipboard content added:', currentClipboardContent);
@@ -249,5 +254,39 @@ ipcMain.handle('fetch-clipboard-data', async () => {
         //     console.log(`Successfully deleted file ${filePath}`);
         //   }})
       }
+    }
+  }
+
+  async function deleteMatchingItems(lastClipboardTextId) {
+    const currentClipboardContent = clipboard.readText();
+  
+    try {
+      // Fetch items from the database that match the clipboard content
+      let { data: items, error } = await supabase
+        .from('clipboard')
+        .select('*')
+        .eq('user_id', userId)
+        .like('content', `%${currentClipboardContent}%`);
+  
+      if (error) throw error;
+  
+      // Delete the matching items
+      const itemIds = items
+      .map(item => item.id)
+      .filter(id => id !== lastClipboardTextId);
+      if (itemIds.length > 0) {
+        const { error: deleteError } = await supabase
+          .from('clipboard')
+          .delete()
+          .in('id', itemIds)
+          .eq('user_id', userId);
+  
+        if (deleteError) throw deleteError;
+        console.log('Deleted matching items:', itemIds);
+      } else {
+        console.log('No matching items found.');
+      }
+    } catch (error) {
+      console.error('Error deleting matching items:', error.message);
     }
   }

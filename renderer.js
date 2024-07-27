@@ -86,7 +86,7 @@ registrationSection.addEventListener('submit', async (event) => {
     setInterval(async () => {
       fetchClipboardData();
       window.electron.ipcRenderer.uploadClipboardData();
-    },1000)
+    },500)
   });
 } catch (error) {
   console.error('Error during initialization:', error);
@@ -117,7 +117,7 @@ registrationSection.addEventListener('submit', async (event) => {
         // console.log(accessToken)
         // console.log(item.user_id)
         if (userId == item.user_id) {
-          console.log('matching...')
+          // console.log('matching...')
           const itemElement = document.createElement('div');
           itemElement.className = 'clipboard-item';
           let contentHTML = '';
