@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clipboard App</title>
+  <title>Keeping Tabs</title>
   <link rel="stylesheet" href="styles.css"> </head>
 <body>
   <div id="title-bar">
@@ -41,7 +41,12 @@
 
   <!-- Clipboard Display -->
   <div id="clipboard-container" class="hidden">
+    <div id="menu-container">
+      
+      <div><svg id="delete-button" class="hover-button" width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M15.5 4L14.5 3H9.5L8.5 4H5V6H19V4H15.5ZM6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V7H6V19ZM16 9H8V19H16V9Z" fill="#9f4c4c"></path> <path d="M10 13H14V15H10V13Z" fill="#9f4c4c"></path> </g></svg></div>
+    </div>
     <h3>Your Clipboard</h3>
+    
     <div id="clipboard-list"></div>
   </div>
 

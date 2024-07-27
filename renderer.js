@@ -12,15 +12,21 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const clipboardContainer = document.getElementById('clipboard-container')
   const clipboardList = document.getElementById('clipboard-list') 
+  const registerButton = document.getElementById('register-button')
+  const deleteButton = document.getElementById('delete-button')
+
   try {
 
+    deleteButton.addEventListener('click', () => {
+      window.electron.ipcRenderer.deleteOldItems()
+    })
 
-
-document.getElementById('register-button').addEventListener('click', () => {
+registerButton.addEventListener('click', () => {
   registrationSection.style.display = 'block'
   document.getElementById('register-button').style.display = 'none'
   loginSection.style.display = 'none'
 });
+
 
 
 registrationSection.addEventListener('submit', async (event) => {
@@ -88,6 +94,7 @@ registrationSection.addEventListener('submit', async (event) => {
       window.electron.ipcRenderer.uploadClipboardData();
     },500)
   });
+
 } catch (error) {
   console.error('Error during initialization:', error);
 }
@@ -99,6 +106,7 @@ registrationSection.addEventListener('submit', async (event) => {
 
   const userId = window.localStorage.getItem('userId');
   const accessToken = window.localStorage.getItem('accessToken');
+  const deleteIcon = '<svg id="delete-icon" width="25px" height="25px" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><defs><style> .cls-1 { fill: #9f4c4c; fill-rule: evenodd; } </style></defs><path class="cls-1" d="M100,390a30,30,0,1,1,30-30A30,30,0,0,1,100,390Zm18-30a4,4,0,0,1-4,4H86a4,4,0,0,1,0-8h28A4,4,0,0,1,118,360Z" id="remove" transform="translate(-70 -330)"></path></g></svg>'
 
 
 
@@ -106,6 +114,9 @@ registrationSection.addEventListener('submit', async (event) => {
     console.log('fetching...')
    
     try {
+
+
+     
       const data = await window.electron.ipcRenderer.fetchClipboardData();
   
       const clipboardList = document.getElementById('clipboard-list');
@@ -120,6 +131,7 @@ registrationSection.addEventListener('submit', async (event) => {
           // console.log('matching...')
           const itemElement = document.createElement('div');
           itemElement.className = 'clipboard-item';
+          const deleteID = generateUUID()
           let contentHTML = '';
         if (item.image_url) {
           contentHTML = `
@@ -135,12 +147,24 @@ registrationSection.addEventListener('submit', async (event) => {
         // Build the HTML structure for the item
         itemElement.innerHTML = `
           <div class="clipboard-content">
-            ${contentHTML}
+            ${contentHTML} 
           </div>
         `;
 
   
         clipboardList.appendChild(itemElement);
+
+        itemElement.addEventListener('contextmenu', (event) => {
+          event.preventDefault();
+          
+          if (item.id) {
+            // Send ID to main process
+            console.log(item.id)
+            window.electron.ipcRenderer.deleteItem(item.id);
+          }
+        });
+
+       
         
       }
     });
@@ -152,6 +176,7 @@ registrationSection.addEventListener('submit', async (event) => {
 
 function copy(content, itemElement) {
   itemElement.addEventListener('click', () => {
+    this.disabled = true;
     navigator.clipboard.writeText(content)
       .then(() => {
         console.log('Text copied to clipboard');
@@ -170,14 +195,43 @@ function showNotification() {
   // notification.style.display = 'block'
   notification.style.opacity = 1
   // notificationSound.play();
+  notification.style.backgroundColor = '#f8f8f8'
+  notification.style.color = '#191827'
+
+  notification.innerText = 'Copied to clipboard!'
 
   setTimeout(() => {
     // notification.style.display = 'none'
     notification.style.opacity = 0
     notification.style.transform = 'translateY(0);'
-    
-
-
+  
 
   }, 3000); // Show the notification for 2 seconds
+}
+
+function showDeleteNotification() {
+  const notification = document.getElementById('notification');
+  // const notificationSound = document.getElementById('notificationSound');
+  notification.style.opacity = 1
+  notification.style.backgroundColor = '#9f4c4c'
+  notification.style.color = '#f8f8f8'
+
+  notification.innerText = 'Item deleted.'
+  // notificationSound.play();
+
+  setTimeout(() => {
+    notification.style.opacity = 0
+    notification.style.transform = 'translateY(0);'
+  
+
+  }, 3000); // Show the notification for 2 seconds
+}
+
+
+function generateUUID() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      const r = Math.random() * 16 | 0;
+      const v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+  });
 }

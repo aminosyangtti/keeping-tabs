@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, clipboard, screen } = require('electron');
+const { app, BrowserWindow, ipcMain, clipboard, screen, dialog } = require('electron');
 const path = require('path');
 // const { supabase } = require('./supabase');
 const { createClient } = require('@supabase/supabase-js');
@@ -290,3 +290,73 @@ ipcMain.handle('fetch-clipboard-data', async () => {
       console.error('Error deleting matching items:', error.message);
     }
   }
+
+
+
+  ipcMain.on('delete-item', async (event, itemId) => {
+    try {
+
+      const result = await dialog.showMessageBox({
+        type: 'question',
+        buttons: ['Yes', 'No'],
+        title: 'Confirm Deletion',
+        message: `Do you want to delete this item?`,
+      });
+
+      if (result.response === 0) { // User clicked 'Yes'
+      const { error: deleteError } = await supabase
+        .from('clipboard')
+        .delete()
+        .eq('id', itemId)
+        .eq('user_id', userId);
+
+      if (deleteError) throw deleteError;
+      console.log(`Item ${itemId} deleted from database`);
+      }
+    } catch (error) {
+      console.error('Error deleting item:', error.message);
+    }
+  });
+
+  ipcMain.on('delete-old-items', async (event) => {
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setDate(oneMonthAgo.getDate() - 30);
+    const oneDayAgo = new Date();
+    oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+    try {
+
+      const result = await dialog.showMessageBox({
+        type: 'question',
+        buttons: ['24 hours', '1 Week', '30 Days', 'Cancel'],
+        title: 'Confirm Deletion',
+        message: `Delete items older than...`,
+      });
+      if (result.response === 1) {
+      const { data, error } = await supabase
+        .from('clipboard')
+        .delete()
+        .lt('created_at', oneWeekAgo.toISOString()); 
+      if (error) throw error;
+      console.log('Old items deleted from database:', data);
+      } else if (result.response === 2) {
+        const { data, error } = await supabase
+        .from('clipboard')
+        .delete()
+        .lt('created_at', oneMonthAgo.toISOString()); 
+      if (error) throw error;
+      console.log('Old items deleted from database:', data);
+      } else if (result.response === 0) {
+        const { data, error } = await supabase
+        .from('clipboard')
+        .delete()
+        .lt('created_at', oneDayAgo.toISOString()); 
+      if (error) throw error;
+      console.log('Old items deleted from database:', data);
+      }
+    } catch (error) {
+      console.error('Error deleting old items:', error.message);
+    }
+  });
+  
