@@ -86,7 +86,7 @@ registrationSection.addEventListener('submit', async (event) => {
     setInterval(async () => {
       fetchClipboardData();
       window.electron.ipcRenderer.uploadClipboardData();
-    },2000)
+    },1000)
   });
 } catch (error) {
   console.error('Error during initialization:', error);
@@ -126,8 +126,10 @@ registrationSection.addEventListener('submit', async (event) => {
             <img src="${item.image_url}" alt="Clipboard Image" style="max-width: 300px;"/>
             <p><strong>Image URL:</strong> ${item.image_url}</p>
           `;
+          copy(item.image_url, itemElement)
         } else {
           contentHTML = `<div>${item.content}</div>`;
+          copy(item.content, itemElement)
         }
   
         // Build the HTML structure for the item
@@ -136,12 +138,46 @@ registrationSection.addEventListener('submit', async (event) => {
             ${contentHTML}
           </div>
         `;
+
   
         clipboardList.appendChild(itemElement);
+        
       }
     });
        
   } catch (error) {
     console.error('Error fetching clipboard data:', error.message);
   }
+}
+
+function copy(content, itemElement) {
+  itemElement.addEventListener('click', () => {
+    navigator.clipboard.writeText(content)
+      .then(() => {
+        console.log('Text copied to clipboard');
+        showNotification();
+     })
+      .catch(err => {
+        console.error('Failed to copy text: ', err);
+     });
+  });
+}
+
+
+function showNotification() {
+  const notification = document.getElementById('notification');
+  // const notificationSound = document.getElementById('notificationSound');
+  // notification.style.display = 'block'
+  notification.style.opacity = 1
+  // notificationSound.play();
+
+  setTimeout(() => {
+    // notification.style.display = 'none'
+    notification.style.opacity = 0
+    notification.style.transform = 'translateY(0);'
+    
+
+
+
+  }, 3000); // Show the notification for 2 seconds
 }
