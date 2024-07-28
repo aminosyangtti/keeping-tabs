@@ -26,7 +26,6 @@ const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 
-
 function createWindow() {
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width, height } = primaryDisplay.workAreaSize;
@@ -41,15 +40,15 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
       contextIsolation: true,
-      webSecurity: true
+      webSecurity: false
     },
-  });
+});
 
-  win.loadFile('index.html');
-  if (process.env.NODE_ENV === 'development') {
+win.loadFile('index.html');
+if (process.env.NODE_ENV === 'development') {
     win.webContents.openDevTools({mode:'undocked'});
-  }
-  win.webContents.openDevTools({mode:'undocked'});
+}
+win.webContents.openDevTools({mode:'undocked'});
 }
 
 app.on('ready', async () => {
@@ -60,113 +59,17 @@ app.on('ready', async () => {
 
 });
 
-  
-
-  app.on('activate', () => {
+app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
-  });
+});
 
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
 
-
-ipcMain.handle('upload-clipboard-data', async() => {
-  // handleClipboardImage()
-  const currentClipboardContent = clipboard.readText();
-
-  if (currentClipboardContent && currentClipboardContent !== lastClipboardContent) {
-    lastClipboardContent = currentClipboardContent;
-    if (isPassword(currentClipboardContent)) {
   
-      const result = await dialog.showMessageBox({
-        type: 'error',
-        buttons: ['Yes', 'No'],
-        title: 'Possible Password Detected',
-        message: 'The copied text appears to be a password. Do you want to save it?',
-      })
-        if (result.response === 0) { 
-          dialog.showMessageBox({
-            type: 'info',
-            title: 'Saving...',
-            message: 'No worries! Your password will be encrypted before storing it.',
-          });
-          uploadeData(currentClipboardContent)
-          } else {
-
-          } 
-
-        } else {
-          uploadeData(currentClipboardContent)
-
-
-        }
-      
-    }
-
-})
-
-async function uploadeData(currentClipboardContent) {
-  const encryptedData = CryptoJS.AES.encrypt(currentClipboardContent, process.env.SECRET_KEY).toString();
-        
-  try {
-    const { data, error } = await supabase
-      .from('clipboard')
-      .insert({ 
-        content: encryptedData,
-        user_id: userId
-       })
-      .select();
-
-       lastClipboardTextId = data[0].id;
-       deleteMatchingItems(lastClipboardTextId)
-
-
-    if (error) throw error;
-    console.log('Clipboard content added:', encryptedData);
-  } catch (error) {
-    console.error('Error adding clipboard content:', error.message);
-  }
-}
-
-ipcMain.handle('fetch-clipboard-data', async () => {
-
- 
-  try {
-    const { data, error } = await supabase
-      .from('clipboard')
-      .select('*')
-      .order('created_at', { ascending: false }); 
-
-    if (error) throw error;
-    // console.log(data)
-
-    const decryptedData = data.map(row => {
-      try {
-        return {
-          id: row.id,
-          user_id: row.user_id,
-          content: decrypt(row.content)
-        };
-      } catch (decryptionError) {
-        console.error(`Error decrypting row with id ${row.id}:`, decryptionError.message);
-        return {
-          id: row.id,
-          user_id: row.user_id,
-          content: null, // or some indication of decryption failure
-        };
-      }
-    });
-
-    return decryptedData;
-  } catch (error) {
-    console.error('Error fetching clipboard data:', error.message);
-    throw error;
-  }
-});
-  
-  ipcMain.handle('register-user', async (event, { email, password }) => {
+ipcMain.handle('register-user', async (event, { email, password }) => {
     try {
       const { data, error } = await supabase.auth.signUp({ email, password });
       if (error) throw error;
@@ -175,9 +78,9 @@ ipcMain.handle('fetch-clipboard-data', async () => {
       console.error('Registration error:', error.message);
       throw error;
     }
-  });
+});
   
-  ipcMain.handle('login-user', async (event, { email, password }) => {
+ipcMain.handle('login-user', async (event, { email, password }) => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
@@ -186,10 +89,10 @@ ipcMain.handle('fetch-clipboard-data', async () => {
       console.error('Login error:', error.message);
       throw error;
     }
-  });
+});
 
 
-  async function autoLogin() {
+async function autoLogin() {
     const authToken = store.get('authToken');
     const refreshToken = store.get('refreshToken');
   
@@ -205,6 +108,7 @@ ipcMain.handle('fetch-clipboard-data', async () => {
           userId: data.user.id 
         });
         console.log('User logged in automatically');
+		console.log(userId)
 
         userId = data.user.id
       } catch (error) {
@@ -215,9 +119,9 @@ ipcMain.handle('fetch-clipboard-data', async () => {
     } else {
       console.log('No stored tokens found');
     }
-  }
+}
   
-  supabase.auth.onAuthStateChange((event, session) => {
+supabase.auth.onAuthStateChange((event, session) => {
     if (event === 'SIGNED_IN') {
       store.set('authToken', session.access_token);
       store.set('refreshToken', session.refresh_token);
@@ -232,222 +136,106 @@ ipcMain.handle('fetch-clipboard-data', async () => {
       store.delete('authToken');
       store.delete('refreshToken');
     }
-  });
+});
   
 
-  function deleteFolderContents(folderPath) {
-    fs.readdir(folderPath, (err, files) => {
-      if (err) {
-        console.error(`Error reading folder ${folderPath}:`, err.message);
-        return;
-      }
-  
-      files.forEach(file => {
-        const filePath = path.join(folderPath, file);
-        fs.unlink(filePath, err => {
-          if (err) {
-            console.error(`Error deleting file ${filePath}:`, err.message);
-          } else {
-            console.log(`Successfully deleted file ${filePath}`);
-          }
-        });
-      });
-    });
-  }
 
-
- async function handleClipboardImage() {
-  const currentClipboardImage = clipboard.readImage();
-
-  // console.log(currentClipboardImage)
-  
-    if (!currentClipboardImage.isEmpty()) {
-      const imageBuffer = currentClipboardImage.toPNG();
-      const imageId = uuidv4();
-      const imagePath = path.join(__dirname, `images/${imageId}.png`);
-      const folderPath = path.join(__dirname, 'images');
-      await promisify(fs.writeFile)(imagePath, imageBuffer);
-      console.log('Image saved:', imagePath);
-  
-      const base64ImageData = imageBuffer.toString('base64');
-      const currentImageHash = crypto.createHash('sha256').update(base64ImageData).digest('hex');
-  
-      if (currentImageHash !== lastImageHash) {
-        lastImageHash = currentImageHash;
-  
-        try {
-          const arrayBuffer = decode(base64ImageData);
-          const { data, error } = await supabase
-            .storage
-            .from('images')
-            .upload(`${imageId}.png`, arrayBuffer, {
-              contentType: 'image/png',
-              user_id: userId
-            });
-  
-          if (error) throw error;
-  
-          await supabase.from('clipboard').insert({
-            image_url: `${SUPABASE_URL}/storage/v1/object/public/images/${imageId}.png`,
-          });
-          console.log('Image URL added to database:', `${SUPABASE_URL}/storage/v1/object/public/images/${imageId}.png`);
-  
-        
-          deleteFolderContents(folderPath);
-        } catch (error) {
-          console.error('Error handling clipboard image:', error.message);
-        }
-      } else {
-        console.log('No change detected in clipboard image.');
-        const filePath = path.join(__dirname, `images/${imageId}.png`);
-        // fs.unlink(filePath, err => {
-        //   if (err) {
-        //     console.error(`Error deleting file ${filePath}:`, err.message);
-        //   } else {
-        //     console.log(`Successfully deleted file ${filePath}`);
-        //   }})
-      }
-    }
-  }
-
-  async function deleteMatchingItems(lastClipboardTextId) {
+ipcMain.handle('upload-clipboard-data', async() => {
+    // handleClipboardImage()
     const currentClipboardContent = clipboard.readText();
-
-  try {
-    let { data: items, error } = await supabase
-      .from('clipboard')
-      .select('*')
-      .eq('user_id', userId);
-
-    if (error) throw error;
-
-    const matchingItems = items
-      .filter(item => decrypt(item.content) === currentClipboardContent)
-      .filter(item => item.id !== lastClipboardTextId);
-
-    const itemIds = matchingItems.map(item => item.id);
-
-    if (itemIds.length > 0) {
-      const { error: deleteError } = await supabase
-        .from('clipboard')
-        .delete()
-        .in('id', itemIds)
-        .eq('user_id', userId);
-
-      if (deleteError) throw deleteError;
-
-      console.log('Deleted matching items:', itemIds);
-    } else {
-      console.log('No matching items found.');
-    }
-  } catch (error) {
-    console.error('Error deleting matching items:', error.message);
-  }
-}
-
-
-  ipcMain.on('delete-item', async (event, itemId) => {
-    try {
-
-      const result = await dialog.showMessageBox({
-        type: 'question',
-        buttons: ['Yes', 'No'],
-        title: 'Confirm Deletion',
-        message: `Do you want to delete this item?`,
-      });
-
-      if (result.response === 0) { // User clicked 'Yes'
-      const { error: deleteError } = await supabase
-        .from('clipboard')
-        .delete()
-        .eq('id', itemId)
-        .eq('user_id', userId);
-
-      if (deleteError) throw deleteError;
-      console.log(`Item ${itemId} deleted from database`);
+  
+    if (currentClipboardContent && currentClipboardContent !== lastClipboardContent) {
+      lastClipboardContent = currentClipboardContent;
+      if (isPassword(currentClipboardContent)) {
+    
+        const result = await dialog.showMessageBox({
+          type: 'error',
+          buttons: ['Yes', 'No'],
+          title: 'Possible Password Detected',
+          message: 'The copied text appears to be a password. Do you want to save it?',
+        })
+          if (result.response === 0) { 
+            dialog.showMessageBox({
+              type: 'info',
+              title: 'Saving...',
+              message: 'No worries! Your password will be encrypted before storing it.',
+            });
+            uploadeData(currentClipboardContent)
+            } else {
+  
+            } 
+  
+          } else {
+            uploadeData(currentClipboardContent)
+  
+  
+          }
+        
       }
-    } catch (error) {
-      console.error('Error deleting item:', error.message);
-    }
-  });
-
-  ipcMain.on('delete-broken-item', async (event, itemId) => {
+  
+})
+  
+async function uploadeData(currentClipboardContent) {
+    const encryptedData = CryptoJS.AES.encrypt(currentClipboardContent, process.env.SECRET_KEY).toString();
+          
     try {
-      dialog.showMessageBox({
-        type: 'info',
-        title: 'Broken Link Deleted',
-        message: `A copied broken link was automatically deleted.`,
-      });
-      const { error: deleteError } = await supabase
-        .from('clipboard')
-        .delete()
-        .eq('id', itemId)
-        .eq('user_id', userId);
-
-      if (deleteError) throw deleteError;
-      console.log(`Item ${itemId} deleted from database`);
-      } catch (error) {
-      console.error('Error deleting item:', error.message);
-    }
-  });
-
-  ipcMain.on('delete-old-items', async (event) => {
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-    const oneMonthAgo = new Date();
-    oneMonthAgo.setDate(oneMonthAgo.getDate() - 30);
-    const oneDayAgo = new Date();
-    oneDayAgo.setDate(oneDayAgo.getDate() - 1);
-    try {
-
-      const result = await dialog.showMessageBox({
-        type: 'question',
-        buttons: ['24 hours', '1 Week', '30 Days', 'Cancel'],
-        title: 'Confirm Deletion',
-        message: `Delete items older than...`,
-      });
-      if (result.response === 1) {
       const { data, error } = await supabase
         .from('clipboard')
-        .delete()
-        .lt('created_at', oneWeekAgo.toISOString())
-        .eq('user_id', userId); 
+        .insert({ 
+          content: encryptedData,
+          user_id: userId
+         })
+        .select();
+  
+         lastClipboardTextId = data[0].id;
+         deleteMatchingItems(lastClipboardTextId)
+  
+  
       if (error) throw error;
-      console.log('Old items deleted from database:', data);
-      } else if (result.response === 2) {
-        const { data, error } = await supabase
-        .from('clipboard')
-        .delete()
-        .lt('created_at', oneMonthAgo.toISOString())
-        .eq('user_id', userId);
-      if (error) throw error;
-      console.log('Old items deleted from database:', data);
-      } else if (result.response === 0) {
-        const { data, error } = await supabase
-        .from('clipboard')
-        .delete()
-        .lt('created_at', oneDayAgo.toISOString())
-        .eq('user_id', userId);
-      if (error) throw error;
-      console.log('Old items deleted from database:', data);
-      }
+      console.log('Clipboard content added:', encryptedData);
     } catch (error) {
-      console.error('Error deleting old items:', error.message);
+      console.error('Error adding clipboard content:', error.message);
     }
-  });
-
-  function decrypt(encryptedData) {
+}
+  
+ipcMain.handle('fetch-clipboard-data', async () => {
+  
+   
     try {
-      const bytes = CryptoJS.AES.decrypt(encryptedData, process.env.SECRET_KEY);
-      const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
+      const { data, error } = await supabase
+        .from('clipboard')
+        .select('*')
+        .order('created_at', { ascending: false })
+		.eq('user_id', userId);
+
+  
+      if (error) throw error;
+      // console.log(data)
+  
+      const decryptedData = data.map(row => {
+        try {
+          return {
+            id: row.id,
+            user_id: row.user_id,
+            content: decrypt(row.content)
+          };
+        } catch (decryptionError) {
+          console.error(`Error decrypting row with id ${row.id}:`, decryptionError.message);
+          return {
+            id: row.id,
+            user_id: row.user_id,
+            content: null, // or some indication of decryption failure
+          };
+        }
+      });
+  
       return decryptedData;
     } catch (error) {
-      console.error('Error decrypting data:', error.message);
-      throw new Error('Decryption failed');
+      console.error('Error fetching clipboard data:', error.message);
+      throw error;
     }
-  }
-
-  ipcMain.handle('fetch-metadata', async (event, url) => {
+});
+ipcMain.handle('fetch-metadata', async (event, url) => {
   
       const options = { url };
       try {
@@ -462,9 +250,211 @@ ipcMain.handle('fetch-clipboard-data', async () => {
         console.error('Error fetching metadata:', error.message);
         return null;
       }
-    });
+});
 
-    function isPassword(text) {
+async function handleClipboardImage() {
+      const currentClipboardImage = clipboard.readImage();
+    
+      // console.log(currentClipboardImage)
+      
+        if (!currentClipboardImage.isEmpty()) {
+          const imageBuffer = currentClipboardImage.toPNG();
+          const imageId = uuidv4();
+          const imagePath = path.join(__dirname, `images/${imageId}.png`);
+          const folderPath = path.join(__dirname, 'images');
+          await promisify(fs.writeFile)(imagePath, imageBuffer);
+          console.log('Image saved:', imagePath);
+      
+          const base64ImageData = imageBuffer.toString('base64');
+          const currentImageHash = crypto.createHash('sha256').update(base64ImageData).digest('hex');
+      
+          if (currentImageHash !== lastImageHash) {
+            lastImageHash = currentImageHash;
+      
+            try {
+              const arrayBuffer = decode(base64ImageData);
+              const { data, error } = await supabase
+                .storage
+                .from('images')
+                .upload(`${imageId}.png`, arrayBuffer, {
+                  contentType: 'image/png',
+                  user_id: userId
+                });
+      
+              if (error) throw error;
+      
+              await supabase.from('clipboard').insert({
+                image_url: `${SUPABASE_URL}/storage/v1/object/public/images/${imageId}.png`,
+              });
+              console.log('Image URL added to database:', `${SUPABASE_URL}/storage/v1/object/public/images/${imageId}.png`);
+      
+            
+              deleteFolderContent(folderPath);
+            } catch (error) {
+              console.error('Error handling clipboard image:', error.message);
+            }
+          } else {
+            console.log('No change detected in clipboard image.');
+            const filePath = path.join(__dirname, `images/${imageId}.png`);
+            // fs.unlink(filePath, err => {
+            //   if (err) {
+            //     console.error(`Error deleting file ${filePath}:`, err.message);
+            //   } else {
+            //     console.log(`Successfully deleted file ${filePath}`);
+            //   }})
+          }
+        }
+}
+    
+
+async function deleteMatchingItems(lastClipboardTextId) {
+      const currentClipboardContent = clipboard.readText();
+  
+    try {
+      let { data: items, error } = await supabase
+        .from('clipboard')
+        .select('*')
+        .eq('user_id', userId);
+  
+      if (error) throw error;
+  
+      const matchingItems = items
+        .filter(item => decrypt(item.content) === currentClipboardContent)
+        .filter(item => item.id !== lastClipboardTextId);
+  
+      const itemIds = matchingItems.map(item => item.id);
+  
+      if (itemIds.length > 0) {
+        const { error: deleteError } = await supabase
+          .from('clipboard')
+          .delete()
+          .in('id', itemIds)
+          .eq('user_id', userId);
+  
+        if (deleteError) throw deleteError;
+  
+        console.log('Deleted matching items:', itemIds);
+      } else {
+        console.log('No matching items found.');
+      }
+    } catch (error) {
+      console.error('Error deleting matching items:', error.message);
+    }
+}
+  
+  
+ipcMain.on('delete-item', async (event, itemId) => {
+      try {
+  
+        const result = await dialog.showMessageBox({
+          type: 'question',
+          buttons: ['Yes', 'No'],
+          title: 'Confirm Deletion',
+          message: `Do you want to delete this item?`,
+        });
+  
+        if (result.response === 0) { // User clicked 'Yes'
+        const { error: deleteError } = await supabase
+          .from('clipboard')
+          .delete()
+          .eq('id', itemId)
+          .eq('user_id', userId);
+  
+        if (deleteError) throw deleteError;
+        console.log(`Item ${itemId} deleted from database`);
+        }
+      } catch (error) {
+        console.error('Error deleting item:', error.message);
+      }
+});
+  
+ipcMain.on('delete-broken-item', async (event, itemId) => {
+      try {
+        dialog.showMessageBox({
+          type: 'info',
+          title: 'Broken Link Deleted',
+          message: `A copied broken link was automatically deleted.`,
+        });
+        const { error: deleteError } = await supabase
+          .from('clipboard')
+          .delete()
+          .eq('id', itemId)
+          .eq('user_id', userId);
+  
+        if (deleteError) throw deleteError;
+        console.log(`Item ${itemId} deleted from database`);
+        } catch (error) {
+        console.error('Error deleting item:', error.message);
+      }
+});
+  
+ipcMain.on('delete-old-items', async (event) => {
+      const oneWeekAgo = new Date();
+      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+      const oneMonthAgo = new Date();
+      oneMonthAgo.setDate(oneMonthAgo.getDate() - 30);
+      const oneDayAgo = new Date();
+      oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+      try {
+  
+        const result = await dialog.showMessageBox({
+          type: 'question',
+          buttons: ['24 hours', '1 Week', '30 Days', 'Cancel'],
+          title: 'Confirm Deletion',
+          message: `Delete items older than...`,
+        });
+        if (result.response === 1) {
+        const { data, error } = await supabase
+          .from('clipboard')
+          .delete()
+          .lt('created_at', oneWeekAgo.toISOString())
+          .eq('user_id', userId); 
+        if (error) throw error;
+        console.log('Old items deleted from database:', data);
+        } else if (result.response === 2) {
+          const { data, error } = await supabase
+          .from('clipboard')
+          .delete()
+          .lt('created_at', oneMonthAgo.toISOString())
+          .eq('user_id', userId);
+        if (error) throw error;
+        console.log('Old items deleted from database:', data);
+        } else if (result.response === 0) {
+          const { data, error } = await supabase
+          .from('clipboard')
+          .delete()
+          .lt('created_at', oneDayAgo.toISOString())
+          .eq('user_id', userId);
+        if (error) throw error;
+        console.log('Old items deleted from database:', data);
+        }
+      } catch (error) {
+        console.error('Error deleting old items:', error.message);
+      }
+});
+function deleteFolderContent(folderPath) {
+      fs.readdir(folderPath, (err, files) => {
+        if (err) {
+          console.error(`Error reading folder ${folderPath}:`, err.message);
+          return;
+        }
+    
+        files.forEach(file => {
+          const filePath = path.join(folderPath, file);
+          fs.unlink(filePath, err => {
+  
+            if (err) {
+              console.error(`Error deleting file ${filePath}:`, err.message);
+            } else {
+              console.log(`Successfully deleted file ${filePath}`);
+            }
+          });
+        });
+      });
+}
+  
+  
+function isPassword(text) {
       // const lengthCriteria = text.length >= 8;
       // const varietyCriteria = /[A-Z]/.test(text) && /[a-z]/.test(text) && /[0-9]/.test(text) && /[!@#$%^&*()_+]/.test(text);
   
@@ -475,7 +465,16 @@ ipcMain.handle('fetch-clipboard-data', async () => {
       ];
       return passwordPatterns.some(pattern => pattern.test(text)) 
 
-    }
+}
 
-    
+function decrypt(encryptedData) {
+      try {
+        const bytes = CryptoJS.AES.decrypt(encryptedData, process.env.SECRET_KEY);
+        const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
+        return decryptedData;
+      } catch (error) {
+        console.error('Error decrypting data:', error.message);
+        throw new Error('Decryption failed');
+      }
+} 
   

@@ -67,9 +67,14 @@ html, body {
 }
 
 #registration-form button {
-    margin-top: 10px;
-    margin-bottom: 10px;    
- }
+  margin-top: 10px;
+  margin-bottom: 10px;   
+  width: 50%;
+  border-radius: 3px;
+  border: #00000000;
+  padding: 3px;
+
+}
 
  #login-section {
     
@@ -91,8 +96,17 @@ html, body {
 
 #login-form button {
     margin-top: 10px;
-    margin-bottom: 10px;    
+    margin-bottom: 10px;   
+    width: 50%;
+    border-radius: 3px;
+    border: #00000000;
+    padding: 3px;
+
  }
+#reset-password-button {
+  font-size: x-small;
+  color: #888787;
+}
 
 
 
@@ -245,6 +259,17 @@ html, body {
     
       }
 
+      #auth-page-logo {
+        display: flex;
+        justify-content: center; 
+        flex-direction: column; 
+        align-items: center;
+        fill: #4e8cb7;
+      }
+      #auth-page-logo h2 {
+        color: #4e8cb7
+      }
+
     .clipboard-content {
         cursor:pointer;
         transition: transform 0.1s ease;
@@ -258,12 +283,9 @@ html, body {
         display: flex;
         flex-direction: column;
         width: 100%;
-
-        
        }
 
-
- #register-button {
+ #registration-page-button {
     font-size: smaller;
     /* color: #b6794e; */
     color: #4e8cb7;
@@ -344,6 +366,18 @@ html, body {
     
       }
 
+
+    #auth-page-logo {
+      display: flex;
+      justify-content: center; 
+      flex-direction: column; 
+      align-items: center;
+      fill: #b6794e;
+    }
+    #auth-page-logo h2 {
+      color: #b6794e
+    }
+
     .clipboard-content {
         cursor:pointer;
         transition: transform 0.1s ease;
@@ -363,11 +397,17 @@ html, body {
        }
 
 
- #register-button {
+ #registration-page-button {
     font-size: smaller;
     color: #b6794e;
     /* color: #4e8cb7; for light mode */
     cursor: pointer;
+}
+#login-page-button {
+  font-size: smaller;
+  color: #b6794e;
+  /* color: #4e8cb7; for light mode */
+  cursor: pointer;
 }
     
 #notification {

@@ -2,8 +2,6 @@
 
 
 
-
-
 document.addEventListener('DOMContentLoaded', async () => {
 
   const registrationSection = document.getElementById('registration-section')
@@ -12,8 +10,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const clipboardContainer = document.getElementById('clipboard-container')
   const clipboardList = document.getElementById('clipboard-list') 
-  const registerButton = document.getElementById('register-button')
+  const registrationPageButton = document.getElementById('registration-page-button')
+  const loginPageButton = document.getElementById('login-page-button')
+
   const deleteButton = document.getElementById('delete-button')
+  const loginForm = document.getElementById('login-form')
+  const title = document.getElementById('title')
 
   try {
 
@@ -21,16 +23,19 @@ document.addEventListener('DOMContentLoaded', async () => {
       window.electron.ipcRenderer.deleteOldItems()
     })
 
-registerButton.addEventListener('click', () => {
-  registrationSection.style.display = 'block'
-  document.getElementById('register-button').style.display = 'none'
-  loginSection.style.display = 'none'
-});
+    loginPageButton.addEventListener('click', () => {
+      loginSection.style.display = 'block'
+      registrationSection.style.display = 'none'
+    })
+
+    registrationPageButton.addEventListener('click', () => {
+    registrationSection.style.display = 'block'
+    loginSection.style.display = 'none'
+    });
 
 
-
-registrationSection.addEventListener('submit', async (event) => {
-    event.preventDefault();
+    registrationSection.addEventListener('submit', async (event) => {
+      event.preventDefault();
   
     const email = document.getElementById('register-email').value;
     const password = document.getElementById('register-password').value;
@@ -44,13 +49,13 @@ registrationSection.addEventListener('submit', async (event) => {
     } catch (error) {
       console.error('Registration error:', error.message);
     }
-  });
+    });
   
-  document.getElementById('login-form').addEventListener('submit', async (event) => {
-    event.preventDefault();
+    loginForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
   
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
   
     try {
       const response = await window.electron.ipcRenderer.loginUser(email, password);
@@ -60,89 +65,86 @@ registrationSection.addEventListener('submit', async (event) => {
       
       authContainer.style.display = 'none'
       clipboardContainer.style.display = 'flex'
-      setInterval(async () => {
-        fetchClipboardData();
-        window.electron.ipcRenderer.uploadClipboardData();
-      },2000)
+      startDataUpdates()
+      title.style.display = 'flex'
+
+
      
     } catch (error) {
       console.error('Login error:', error.message);
     }
-  });
+    });
 
 
-  window.electron.onAutoLoginSuccess(({ accessToken, userId }) => {
-    console.log('Auto-login successful. Access token:', userId);
-    window.localStorage.setItem('userId', userId);
-    window.localStorage.setItem('accessToken', accessToken);
-    authContainer.style.display = 'none'
-    clipboardContainer.style.display = 'flex'
+    window.electron.onAutoLoginSuccess(({ accessToken, userId }) => {
+      console.log('Auto-login successful. Access token:', userId);
+      window.localStorage.setItem('userId', userId);
+      window.localStorage.setItem('accessToken', accessToken);
+      authContainer.style.display = 'none'
+      clipboardContainer.style.display = 'flex'
 
-    setInterval(async () => {
-      fetchClipboardData();
-      window.electron.ipcRenderer.uploadClipboardData();
-    },2000)
-  });
+      startDataUpdates()
+      title.style.display = 'flex'
+
+    });
   
-  window.electron.onAuthStateChanged(({ accessToken, userId }) => {
-    console.log('Auth state changed. New access token:', userId);
-    window.localStorage.setItem('userId', userId);
-    window.localStorage.setItem('accessToken', accessToken);
+    window.electron.onAuthStateChanged(({ accessToken, userId }) => {
+      console.log('Auth state changed. New access token:', userId);
+      window.localStorage.setItem('userId', userId);
+      window.localStorage.setItem('accessToken', accessToken);
+      startDataUpdates()
+      title.style.display = 'flex'
 
-    setInterval(async () => {
-      fetchClipboardData();
-      window.electron.ipcRenderer.uploadClipboardData();
-    },500)
-  });
+    });
 
-} catch (error) {
-  console.error('Error during initialization:', error);
-}
+  } catch (error) {
+    console.error('Error during initialization:', error);
+    }
 
 });
 
 
 
 
-  const userId = window.localStorage.getItem('userId');
-  const accessToken = window.localStorage.getItem('accessToken');
+const userId = window.localStorage.getItem('userId');
+const accessToken = window.localStorage.getItem('accessToken');
 
 
-  async function fetchClipboardData() {
-    console.log('fetching...')
+async function fetchClipboardData() {
+  console.log('fetching...')
    
-    try {
+  try {
      
-      const data = await window.electron.ipcRenderer.fetchClipboardData();
+    const data = await window.electron.ipcRenderer.fetchClipboardData();
   
-      const clipboardList = document.getElementById('clipboard-list');
-      clipboardList.innerHTML = ''; 
+    const clipboardList = document.getElementById('clipboard-list');
+    clipboardList.innerHTML = ''; 
 
-      data.forEach(item => {
-
-        if (userId == item.user_id) {
-          const itemElement = document.createElement('div');
-          itemElement.className = 'clipboard-item';
-          let contentHTML = '';
+    data.forEach(item => {
+        
+        const itemElement = document.createElement('div');
+        itemElement.className = 'clipboard-item';
+        let contentHTML = '';
         if (isValidURL(item.content)) {
           displayPreview(item.content, item.id, itemElement)
           copy(item.content, itemElement)
 
-        } if(isHexCode(item.content)) {
+        } 
+        if(isHexCode(item.content)) {
             contentHTML = `<div style="margin: 0; padding: 0; display:flex; justify-content: center; align-items: center; height: 100%; width: 100%; background-color: ${item.content};">${item.content}</div>`;
             copy(item.content, itemElement)
 
-          } else {
+        } else {
           contentHTML = `<div style="padding: 10px">${item.content}</div>`;
           copy(item.content, itemElement)
-          }
+        }
         
   
         itemElement.innerHTML = `
           <div class="clipboard-content">
             ${contentHTML} 
           </div>
-        `;
+          `;
 
   
         clipboardList.appendChild(itemElement);
@@ -156,16 +158,19 @@ registrationSection.addEventListener('submit', async (event) => {
           }
         });
 
-       
-        
-      }
     });
        
   } catch (error) {
     console.error('Error fetching clipboard data:', error.message);
-  }
+    }
 }
 
+async function startDataUpdates() {
+  setInterval(async () => {
+    fetchClipboardData();
+    window.electron.ipcRenderer.uploadClipboardData();
+  },1000)
+}
 function copy(content, itemElement) {
   itemElement.addEventListener('click', () => {
     this.disabled = true;
@@ -179,6 +184,39 @@ function copy(content, itemElement) {
      });
   });
 }
+
+async function displayPreview(url, itemId, itemElement) {
+
+  try {
+  let metadata = await window.electron.ipcRenderer.fetchMetadata(url);
+
+  if (metadata) {
+  const title = metadata.ogTitle || metadata.title || 'No Title';
+  // const description = metadata.ogDescription || metadata.description || 'No Description';
+  const imageUrl = metadata.ogImage[0].url|| 'default_image.png'; 
+
+  itemElement.innerHTML = `
+   <div class="clipboard-content" style="padding: 10px">
+      <img src="${imageUrl}" alt="Preview Image" />
+      <p>${title}</p>
+      <a href="${url}" target="_blank">Open Link</a>
+    </div>
+  `;
+  } else {
+    window.electron.ipcRenderer.deleteBrokenItem(itemId);
+
+    // `
+    // <div class="clipboard-content" style="padding: 10px">
+    //    <img src="${url}" alt="Clipboard Image" style="max-width: 300px;"/>
+    //     <p><strong>Image URL:</strong> ${url}</p>
+        
+    // `;
+    }
+  } catch (error) {
+    console.error(error)
+    } 
+}
+
 
 
 function showNotification() {
@@ -239,38 +277,5 @@ function isValidURL(str) {
 }
 
 
-async function displayPreview(url, itemId, itemElement) {
-
-  try {
-
-  
-  let metadata = await window.electron.ipcRenderer.fetchMetadata(url);
-
-  if (metadata) {
-  const title = metadata.ogTitle || metadata.title || 'No Title';
-  // const description = metadata.ogDescription || metadata.description || 'No Description';
-  const imageUrl = metadata.ogImage[0].url|| 'default_image.png'; 
-
-  itemElement.innerHTML = `
-   <div class="clipboard-content" style="padding: 10px">
-      <img src="${imageUrl}" alt="Preview Image" />
-      <p>${title}</p>
-      <a href="${url}" target="_blank">Open Link</a>
-    </div>
-  `;
-  } else {
-    window.electron.ipcRenderer.deleteBrokenItem(itemId);
-
-    // `
-    // <div class="clipboard-content" style="padding: 10px">
-    //    <img src="${url}" alt="Clipboard Image" style="max-width: 300px;"/>
-    //     <p><strong>Image URL:</strong> ${url}</p>
-        
-    // `;
-  }
-} catch (error) {
-  console.error(error)
-}
-}
 
  
