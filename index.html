@@ -29,7 +29,7 @@
       <button type="submit" class="hover-button">Submit</button>
       <p></p>
       <div style="font-size: small; color: rgb(116, 116, 116); padding-bottom: 10px;">------------------ OR ------------------</div>
-      <div id="login-page-button" class="hover-button">Log in here</div>
+      <div id="login-page-button" class="hover-button">Log in here instead</div>
 
     </form>
   </div>
@@ -40,7 +40,7 @@
     <form id="login-form">
       <input type="email" id="email" placeholder="Email" required>
       <input type="password" id="password" placeholder="Password" required>
-      <div id="reset-password-button" class="hover-button">Reset Password</div>
+      <div id="reset-password-page-button" class="hover-button">Reset Password</div>
       <button type="submit" class="hover-button">Login</button>
       <p></p>
       <div id="registration-page-button" class="hover-button">No Account? Sign up here</div>
@@ -48,11 +48,24 @@
   </div>
   </div>
 
+  <div id="reset-password-section" class="hidden">
+    <h3>Reset password</h3>
+    <form id="reset-password-form">
+      <input type="email" id="reset-email" placeholder="Enter your email" required>
+      <button type="submit" class="hover-button">Submit</button>
+      <p></p>
+      <div style="font-size: small; color: rgb(116, 116, 116); padding-bottom: 10px;">------------------ OR ------------------</div>
+      <div id="login-from-reset-button" class="hover-button">Log in here instead</div>
+
+    </form>
+  </div>
+
+
   <!-- Clipboard Display -->
   <div id="clipboard-container" class="hidden">
     <div id="menu-container">
       
-      <div><svg id="delete-button" class="hover-button" width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M15.5 4L14.5 3H9.5L8.5 4H5V6H19V4H15.5ZM6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V7H6V19ZM16 9H8V19H16V9Z" fill=""></path> <path d="M10 13H14V15H10V13Z" fill=""></path> </g></svg></div>
+      <div><svg id="sign-out-button" class="hover-button" style="cursor: pointer;" width="25px" height="25px" viewBox="0 0 24 24" fill="rgb(116,116,116)" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M4 5.4A1.4 1.4 0 0 1 5.4 4h6.2A1.4 1.4 0 0 1 13 5.4V8a1 1 0 1 0 2 0V5.4A3.4 3.4 0 0 0 11.6 2H5.4A3.4 3.4 0 0 0 2 5.4v13.2A3.4 3.4 0 0 0 5.4 22h6.2a3.4 3.4 0 0 0 3.4-3.4V16a1 1 0 1 0-2 0v2.6a1.4 1.4 0 0 1-1.4 1.4H5.4A1.4 1.4 0 0 1 4 18.6V5.4Z" fill="rgb(116,116,116)"></path><path d="M17.293 8.293a1 1 0 0 1 1.414 0l3 3a1 1 0 0 1 0 1.414l-3 3a1 1 0 0 1-1.414-1.414L18.586 13H7a1 1 0 1 1 0-2h11.586l-1.293-1.293a1 1 0 0 1 0-1.414Z" fill="#rgb(116,116,116)"></path></g></svg><svg id="delete-button" class="hover-button" width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M15.5 4L14.5 3H9.5L8.5 4H5V6H19V4H15.5ZM6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V7H6V19ZM16 9H8V19H16V9Z" fill=""></path> <path d="M10 13H14V15H10V13Z" fill=""></path> </g></svg></div>
     </div>
     <h3>Your Clipboard</h3>
     

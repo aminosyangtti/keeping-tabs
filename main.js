@@ -13,6 +13,8 @@ const crypto = require('crypto');
 const CryptoJS = require('crypto-js')
 const ogs = require('open-graph-scraper');
 
+app.commandLine.appendSwitch('disable-gpu');
+
 
 let store;
 let win;
@@ -40,7 +42,7 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
       contextIsolation: true,
-      webSecurity: false
+      webSecurity: true
     },
 });
 
@@ -88,6 +90,27 @@ ipcMain.handle('login-user', async (event, { email, password }) => {
     } catch (error) {
       console.error('Login error:', error.message);
       throw error;
+    }
+});
+
+ipcMain.handle('sign-out', async () => {
+    try {
+        const { error } = await supabase.auth.signOut();
+        if (error) throw error;
+        console.log('User signed out successfully');
+        win.reload();
+    } catch (error) {
+        console.error('Error signing out:', error.message);
+    }
+});
+
+ipcMain.handle('reset-password', async (event, { email }) => {
+    try {
+        const { error } = await supabase.auth.resetPasswordForEmail(email);
+        if (error) throw error;
+        console.log(`Password reset email sent to ${email}`);
+    } catch (error) {
+        console.error('Error sending password reset email:', error.message);
     }
 });
 

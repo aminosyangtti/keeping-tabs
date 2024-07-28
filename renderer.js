@@ -6,32 +6,78 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const registrationSection = document.getElementById('registration-section')
   const authContainer = document.getElementById('auth-container')
-  const loginSection = document.getElementById('login-section') 
+  const loginSection = document.getElementById('login-section')
+  const resetPasswordSection = document.getElementById('reset-password-section') 
+
 
   const clipboardContainer = document.getElementById('clipboard-container')
   const clipboardList = document.getElementById('clipboard-list') 
   const registrationPageButton = document.getElementById('registration-page-button')
   const loginPageButton = document.getElementById('login-page-button')
+  const loginFromResetButton = document.getElementById('login-from-reset-button')
 
+  const resetPasswordPageButton = document.getElementById('reset-password-page-button')
   const deleteButton = document.getElementById('delete-button')
   const loginForm = document.getElementById('login-form')
   const title = document.getElementById('title')
 
   try {
+    document.getElementById('sign-out-button').addEventListener('click', async () => {
+      try {
+          await window.electron.ipcRenderer.signOut();
+      } catch (error) {
+          console.error('Error signing out:', error.message);
+      }
+    });
 
     deleteButton.addEventListener('click', () => {
       window.electron.ipcRenderer.deleteOldItems()
-    })
+    });
+
+    resetPasswordPageButton.addEventListener('click', () => {
+      resetPasswordSection.style.display = 'block'
+      registrationSection.style.display = 'none'
+      loginSection.style.display = 'none'
+    });
+
+    loginFromResetButton.addEventListener('click', () => {
+      loginSection.style.display = 'block'
+      registrationSection.style.display = 'none'
+      resetPasswordSection.style.display = 'none'
+    });
 
     loginPageButton.addEventListener('click', () => {
       loginSection.style.display = 'block'
       registrationSection.style.display = 'none'
-    })
+      resetPasswordSection.style.display = 'none'
+    });
 
     registrationPageButton.addEventListener('click', () => {
     registrationSection.style.display = 'block'
     loginSection.style.display = 'none'
+    resetPasswordSection.style.display = 'none'
+
     });
+
+    document.getElementById('reset-password-section').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const email = document.getElementById('reset-email').value;
+      if (email) {
+          try {
+              await window.electron.ipcRenderer.resetPassword(email);
+              alert('Password reset email sent. Please check your inbox.');
+              loginSection.style.display = 'block'
+              registrationSection.style.display = 'none'
+              resetPasswordSection.style.display = 'none'
+              document.getElementById('reset-email').value = ''
+              
+          } catch (error) {
+              console.error('Error sending password reset email:', error.message);
+          }
+      } else {
+          alert('Please enter your email.');
+      }
+  });
 
 
     registrationSection.addEventListener('submit', async (event) => {
@@ -74,6 +120,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       console.error('Login error:', error.message);
     }
     });
+
+    
+  
 
 
     window.electron.onAutoLoginSuccess(({ accessToken, userId }) => {
