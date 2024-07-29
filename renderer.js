@@ -4,27 +4,15 @@
 
 document.addEventListener('DOMContentLoaded', async () => {
 
-  const registrationSection = document.getElementById('registration-section')
-  const authContainer = document.getElementById('auth-container')
-  const loginSection = document.getElementById('login-section')
-  const resetPasswordSection = document.getElementById('reset-password-section') 
-
-
-  const clipboardContainer = document.getElementById('clipboard-container')
-  const clipboardList = document.getElementById('clipboard-list') 
-  const registrationPageButton = document.getElementById('registration-page-button')
-  const loginPageButton = document.getElementById('login-page-button')
-  const loginFromResetButton = document.getElementById('login-from-reset-button')
-
-  const resetPasswordPageButton = document.getElementById('reset-password-page-button')
-  const deleteButton = document.getElementById('delete-button')
-  const loginForm = document.getElementById('login-form')
-  const title = document.getElementById('title')
+ 
 
   try {
     document.getElementById('sign-out-button').addEventListener('click', async () => {
       try {
           await window.electron.ipcRenderer.signOut();
+          window.localStorage.removeItem('userId');
+          window.localStorage.removeItem('accessToken');
+          startDataUpdates(null, null)
       } catch (error) {
           console.error('Error signing out:', error.message);
       }
@@ -109,11 +97,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       localStorage.setItem('accessToken', response.session.access_token);
       window.localStorage.setItem('userId', response.session.user.id);
       
-      authContainer.style.display = 'none'
-      clipboardContainer.style.display = 'flex'
-      startDataUpdates()
-      title.style.display = 'flex'
-
+      startDataUpdates(response.session.user.id, response.session.access_token)
 
      
     } catch (error) {
@@ -129,11 +113,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       console.log('Auto-login successful. Access token:', userId);
       window.localStorage.setItem('userId', userId);
       window.localStorage.setItem('accessToken', accessToken);
-      authContainer.style.display = 'none'
-      clipboardContainer.style.display = 'flex'
-
-      startDataUpdates()
-      title.style.display = 'flex'
+      
+      startDataUpdates(userId, accessToken)
+      
 
     });
   
@@ -141,8 +123,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       console.log('Auth state changed. New access token:', userId);
       window.localStorage.setItem('userId', userId);
       window.localStorage.setItem('accessToken', accessToken);
-      startDataUpdates()
-      title.style.display = 'flex'
+      // startDataUpdates()
+      // title.style.display = 'flex'
 
     });
 
@@ -155,8 +137,26 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
 
-const userId = window.localStorage.getItem('userId');
-const accessToken = window.localStorage.getItem('accessToken');
+// const userId = window.localStorage.getItem('userId');
+// console.log(userId)
+// const accessToken = window.localStorage.getItem('accessToken');
+// console.log(accessToken)
+const registrationSection = document.getElementById('registration-section')
+const authContainer = document.getElementById('auth-container')
+const loginSection = document.getElementById('login-section')
+const resetPasswordSection = document.getElementById('reset-password-section') 
+
+
+const clipboardContainer = document.getElementById('clipboard-container')
+const clipboardList = document.getElementById('clipboard-list') 
+const registrationPageButton = document.getElementById('registration-page-button')
+const loginPageButton = document.getElementById('login-page-button')
+const loginFromResetButton = document.getElementById('login-from-reset-button')
+
+const resetPasswordPageButton = document.getElementById('reset-password-page-button')
+const deleteButton = document.getElementById('delete-button')
+const loginForm = document.getElementById('login-form')
+const title = document.getElementById('title')
 
 
 async function fetchClipboardData() {
@@ -171,42 +171,48 @@ async function fetchClipboardData() {
 
     data.forEach(item => {
         
-        const itemElement = document.createElement('div');
+        if (item.content) {
+          const itemElement = document.createElement('div');
         itemElement.className = 'clipboard-item';
         let contentHTML = '';
-        if (isValidURL(item.content)) {
-          displayPreview(item.content, item.id, itemElement)
-          copy(item.content, itemElement)
-
-        } 
-        if(isHexCode(item.content)) {
-            contentHTML = `<div style="margin: 0; padding: 0; display:flex; justify-content: center; align-items: center; height: 100%; width: 100%; background-color: ${item.content};">${item.content}</div>`;
+          if (isValidURL(item.content)) {
+            displayPreview(item.content, item.id, itemElement)
             copy(item.content, itemElement)
+  
+          } 
+          if(isHexCode(item.content)) {
+              contentHTML = `<div style="margin: 0; padding: 0; display:flex; justify-content: center; align-items: center; height: 100%; width: 100%; background-color: ${item.content};">${item.content}</div>`;
+              copy(item.content, itemElement)
+  
+          } else {
+            contentHTML = `<div style="padding: 10px">${item.content}</div>`;
+            copy(item.content, itemElement)
+          }
+          
+    
+          itemElement.innerHTML = `
+            <div class="clipboard-content">
+              ${contentHTML} 
+            </div>
+            `;
+  
+    
+          clipboardList.appendChild(itemElement);
+  
+          itemElement.addEventListener('contextmenu', (event) => {
+            event.preventDefault();
+            
+            if (item.id) {
+              console.log(item.id)
+              window.electron.ipcRenderer.deleteItem(item.id);
+            }
+          });
+  
 
         } else {
-          contentHTML = `<div style="padding: 10px">${item.content}</div>`;
-          copy(item.content, itemElement)
+          
         }
         
-  
-        itemElement.innerHTML = `
-          <div class="clipboard-content">
-            ${contentHTML} 
-          </div>
-          `;
-
-  
-        clipboardList.appendChild(itemElement);
-
-        itemElement.addEventListener('contextmenu', (event) => {
-          event.preventDefault();
-          
-          if (item.id) {
-            console.log(item.id)
-            window.electron.ipcRenderer.deleteItem(item.id);
-          }
-        });
-
     });
        
   } catch (error) {
@@ -214,11 +220,22 @@ async function fetchClipboardData() {
     }
 }
 
-async function startDataUpdates() {
-  setInterval(async () => {
-    fetchClipboardData();
-    window.electron.ipcRenderer.uploadClipboardData();
-  },1000)
+async function startDataUpdates(userId, accessToken) {
+
+  let intervalId;
+  if (userId && accessToken) {
+    authContainer.style.display = 'none'
+      clipboardContainer.style.display = 'flex'
+      title.style.display = 'flex'
+    intervalId = setInterval(async () => {
+      fetchClipboardData();
+      window.electron.ipcRenderer.uploadClipboardData();
+    },1000)
+
+  } else {
+    clearInterval(intervalId)
+  }
+  
 }
 function copy(content, itemElement) {
   itemElement.addEventListener('click', () => {

@@ -228,8 +228,9 @@ ipcMain.handle('fetch-clipboard-data', async () => {
       const { data, error } = await supabase
         .from('clipboard')
         .select('*')
-        .order('created_at', { ascending: false })
-		.eq('user_id', userId);
+        .eq('user_id', userId)
+        .not('content', 'is', null)
+        .order('created_at', { ascending: false });
 
   
       if (error) throw error;
