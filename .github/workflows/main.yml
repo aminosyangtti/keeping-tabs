@@ -27,7 +27,7 @@ jobs:
         echo SUPABASE_URL=${{ secrets.SUPABASE_URL }} >> $GITHUB_ENV
         echo SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }} >> $GITHUB_ENV
         echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> $GITHUB_ENV
-
+        echo MY_GITHUB_TOKEN=${{ secrets.MY_GITHUB_TOKEN }} >> $GITHUB_ENV
 
     - name: Install dependencies
       run: npm install
@@ -68,7 +68,7 @@ jobs:
       id: create_release
       uses: actions/create-release@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
       with:
         tag_name: v1.0.0
         release_name: 'Pre-Release v1.0.0'
@@ -79,19 +79,19 @@ jobs:
     - name: Upload Release Assets (Ubuntu)
       uses: actions/upload-release-asset@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: dist/*
+        asset_path: dist/electron-app-ubuntu.zip
         asset_name: electron-app-ubuntu.zip
         asset_content_type: application/zip
 
     - name: Upload Release Assets (Windows)
       uses: actions/upload-release-asset@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: dist/*
+        asset_path: dist/electron-app-windows.zip
         asset_name: electron-app-windows.zip
         asset_content_type: application/zip
