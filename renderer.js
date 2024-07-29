@@ -6,6 +6,15 @@ document.addEventListener('DOMContentLoaded', async () => {
  
 
   try {
+
+
+    infoButton.addEventListener('click', async () => {
+      document.getElementById('info').style.display = 'flex'
+
+     setTimeout( () => {
+      document.getElementById('info').style.display = 'none'
+     }, 5000)
+    });
     let isMoreOptions = false
 
     moreOptionsButton.addEventListener('click', async () => {
