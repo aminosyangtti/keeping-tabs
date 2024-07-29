@@ -22,21 +22,26 @@ jobs:
       with:
         node-version: '16'
 
-    - name: Set environment variables
-      run: |
-        echo SUPABASE_URL=${{ secrets.SUPABASE_URL }} >> $GITHUB_ENV
-        echo SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }} >> $GITHUB_ENV
-        echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> $GITHUB_ENV
-        echo MY_GITHUB_TOKEN=${{ secrets.MY_GITHUB_TOKEN }} >> $GITHUB_ENV
-
     - name: Install dependencies
       run: npm install
+      env:
+        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+        SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
 
     - name: Build Electron App
       run: npm run build
+      env:
+        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+        SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
 
     - name: Package Electron App
       run: npm run dist
+      env:
+        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+        SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v2
@@ -68,7 +73,7 @@ jobs:
       id: create_release
       uses: actions/create-release@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: v1.0.0
         release_name: 'Pre-Release v1.0.0'
@@ -79,7 +84,7 @@ jobs:
     - name: Upload Release Assets (Ubuntu)
       uses: actions/upload-release-asset@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: dist/electron-app-ubuntu.zip
@@ -89,7 +94,7 @@ jobs:
     - name: Upload Release Assets (Windows)
       uses: actions/upload-release-asset@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: dist/electron-app-windows.zip
