@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         clipboardContainer.style.display ='flex'
         title.style.display = 'flex'
         windowControls.style.display = 'flex'
-        document.body.style.backgroundColor = '#1c1c1c'
+        // document.body.style.backgroundColor = '#1c1c1c'
 
         
 
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         clipboardContainer.style.display ='none'
         title.style.display = 'none'
         windowControls.style.display = 'none'
-        document.body.style.backgroundColor = '#1c1c1c40'
+        // document.body.style.backgroundColor = '#1c1c1c40'
 
         isWindowHidden = true
       }

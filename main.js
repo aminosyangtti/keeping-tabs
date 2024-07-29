@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, clipboard, screen, dialog } = require('electron');
+const { app, BrowserWindow, ipcMain, clipboard, screen, dialog, autoUpdater } = require('electron');
 const path = require('path');
 // const { supabase } = require('./supabase');
 const { createClient } = require('@supabase/supabase-js');
@@ -12,10 +12,13 @@ const pipeline = promisify(require('stream').pipeline);
 const crypto = require('crypto');
 const CryptoJS = require('crypto-js')
 const ogs = require('open-graph-scraper');
+const log = require('electron-log');
 
 app.commandLine.appendSwitch('enable-transparent-visuals');
 app.commandLine.appendSwitch('disable-gpu');
-
+autoUpdater.logger = log;
+autoUpdater.logger.transports.file.level = 'info';
+log.info('App starting...');
 
 let store;
 let win;
@@ -53,14 +56,55 @@ function createWindow() {
       contextIsolation: true,
       webSecurity: true
     },
-});
+  });
 
-win.loadFile('index.html');
-if (process.env.NODE_ENV === 'development') {
+  win.loadFile('index.html');
+  if (process.env.NODE_ENV === 'development') {
     win.webContents.openDevTools({mode:'undocked'});
+    }
+    if (!isDevelopment) {
+      autoUpdater.checkForUpdatesAndNotify();
+    }
+  
+    autoUpdater.on('update-available', () => {
+      log.info('Update available');
+      dialog.showMessageBox({
+        type: 'info',
+        title: 'Update available',
+        message: 'A new update is available.',
+      });
+    });
+  
+    autoUpdater.on('update-not-available', () => {
+      log.info('Update not available');
+    });
+  
+    autoUpdater.on('error', (err) => {
+      log.error('Error in auto-updater:', err.message);
+      dialog.showMessageBox({
+        type: 'error',
+        title: 'Update error',
+        message: 'Error in auto-updater: ' + err,
+      });
+    });
+  
+    autoUpdater.on('update-downloaded', () => {
+      log.info('Update downloaded');
+      dialog.showMessageBox({
+        type: 'info',
+        title: 'Update ready',
+        message: 'A new update is ready. It will be installed on restart. Restart now?',
+        buttons: ['Yes', 'Later']
+      }).then((returnValue) => {
+        if (returnValue.response === 0) autoUpdater.quitAndInstall();
+      });
+    });
+  
 }
-win.webContents.openDevTools({mode:'undocked'});
-}
+
+
+
+
 
 app.on('ready', async () => {
   createWindow();

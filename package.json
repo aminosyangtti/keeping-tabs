@@ -3,21 +3,57 @@
   "version": "1.0.0",
   "main": "main.js",
   "scripts": {
-    "start": "NODE_ENV=development electron ."
+    "start": "NODE_ENV=development electron .",
+    "changelog": "auto-changelog -p",
+    "build": "electron-builder"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
     "@supabase/supabase-js": "^2.44.4",
+    "auto-changelog": "^2.4.0",
     "base64-arraybuffer": "^1.0.2",
     "crypto-js": "^4.2.0",
     "dotenv": "^16.4.5",
-    "electron": "^31.3.0",
     "electron-store": "^10.0.0",
     "fs": "^0.0.1-security",
     "open-graph-scraper": "^6.7.0",
     "util": "^0.12.5",
     "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "electron": "^31.3.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.aminosyangtti.keeping-tabs",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "aminosyangtti",
+        "repo": "keeping-tabs"
+      }
+    ],
+  "files": [
+      "build/**/*",
+      "main.js",
+      "package.json"
+    ],
+    "extraResources": [
+      "assets/**"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.ico"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "build/icon.png"
+    }
   }
 }
