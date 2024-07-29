@@ -3,11 +3,33 @@
 
 
 document.addEventListener('DOMContentLoaded', async () => {
-
  
 
   try {
-    document.getElementById('sign-out-button').addEventListener('click', async () => {
+    let isMoreOptions = false
+
+    moreOptionsButton.addEventListener('click', async () => {
+      if (!isMoreOptions) {
+
+        deleteButton.style.display = 'flex'
+        signOutButton.style.display = 'flex'
+        infoButton.style.display = 'flex'
+        moreOptionsButton.style.backgroundColor = '#74747431'
+
+        isMoreOptions = true
+
+      } else {
+          deleteButton.style.display = 'none'
+      signOutButton.style.display = 'none'
+      infoButton.style.display = 'none'
+      moreOptionsButton.style.backgroundColor = ''
+
+      isMoreOptions = false
+      }
+      
+      
+    });
+    signOutButton.addEventListener('click', async () => {
       try {
           await window.electron.ipcRenderer.signOut();
           window.localStorage.removeItem('userId');
@@ -155,6 +177,9 @@ const loginFromResetButton = document.getElementById('login-from-reset-button')
 
 const resetPasswordPageButton = document.getElementById('reset-password-page-button')
 const deleteButton = document.getElementById('delete-button')
+const moreOptionsButton = document.getElementById('more-options-button')
+const infoButton = document.getElementById('info-button')
+const signOutButton = document.getElementById('sign-out-button')
 const loginForm = document.getElementById('login-form')
 const title = document.getElementById('title')
 
@@ -334,7 +359,10 @@ function generateUUID() {
 
 function isHexCode(str) {
   const hexRegex = /^#([0-9A-F]{3}|[0-9A-F]{6})$/i;
-  return hexRegex.test(str);
+  const hexRegex2 = /^#([0-9A-F]{3}|[0-9A-F]{8})$/i;
+  result = hexRegex.test(str) || hexRegex2.test(str) ? true : false
+
+  return result;
 }
 
 function isValidURL(str) {
