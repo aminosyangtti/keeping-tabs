@@ -94,6 +94,13 @@ ipcMain.handle('login-user', async (event, { email, password }) => {
 });
 
 ipcMain.handle('sign-out', async () => {
+  const result = await dialog.showMessageBox({
+    type: 'error',
+    buttons: ['Yes', 'No'],
+    title: 'Log out',
+    message: 'Do you want to log out?',
+  })
+    if (result.response === 0) { 
     try {
         const { error } = await supabase.auth.signOut();
         if (error) throw error;
@@ -102,6 +109,7 @@ ipcMain.handle('sign-out', async () => {
     } catch (error) {
         console.error('Error signing out:', error.message);
     }
+  }
 });
 
 ipcMain.handle('reset-password', async (event, { email }) => {
