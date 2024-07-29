@@ -6,8 +6,31 @@ document.addEventListener('DOMContentLoaded', async () => {
  
 
   try {
+    let isWindowHidden = false
+    resizeWindowButton.addEventListener('click', async () => {
+      window.electron.ipcRenderer.resizeWindow()
+      if (isWindowHidden) {
+        isWindowHidden = false
+        resizeWindowButton.style.transform = ""
+        clipboardContainer.style.display ='flex'
+        title.style.display = 'flex'
+        windowControls.style.display = 'flex'
+        document.body.style.backgroundColor = '#1c1c1c'
+
+        
 
 
+      } else {
+        resizeWindowButton.style.transform = "matrix(-1, 0, 0, -1, 0, 0)"
+        clipboardContainer.style.display ='none'
+        title.style.display = 'none'
+        windowControls.style.display = 'none'
+        document.body.style.backgroundColor = '#1c1c1c40'
+
+        isWindowHidden = true
+      }
+
+    });
     infoButton.addEventListener('click', async () => {
       document.getElementById('info').style.display = 'flex'
 
@@ -188,9 +211,15 @@ const resetPasswordPageButton = document.getElementById('reset-password-page-but
 const deleteButton = document.getElementById('delete-button')
 const moreOptionsButton = document.getElementById('more-options-button')
 const infoButton = document.getElementById('info-button')
+const resizeWindowButton = document.getElementById('resize-window-button')
+
 const signOutButton = document.getElementById('sign-out-button')
 const loginForm = document.getElementById('login-form')
 const title = document.getElementById('title')
+const titleBar = document.getElementById('title-bar')
+const windowControls = document.getElementById('window-controls')
+
+
 
 
 async function fetchClipboardData() {

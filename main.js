@@ -13,6 +13,7 @@ const crypto = require('crypto');
 const CryptoJS = require('crypto-js')
 const ogs = require('open-graph-scraper');
 
+app.commandLine.appendSwitch('enable-transparent-visuals');
 app.commandLine.appendSwitch('disable-gpu');
 
 
@@ -27,17 +28,25 @@ const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+let screenWidth;
+let screenHeight;
 
 function createWindow() {
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width, height } = primaryDisplay.workAreaSize;
+  screenWidth = width
+  screenHeight = height
+  console.log(screenWidth * 0.15)
+  console.log(screenHeight)
   win = new BrowserWindow({
-    width: width * 0.15,
-    height: height,
-    x: width - (width * 0.15),
-    y: 10,
+    width: screenWidth * 0.15,
+    height: screenHeight,
+    x: screenWidth - (screenWidth * 0.15),
+    y: 0,
     frame: false,
-    resizable: false,
+    resizable: true,
+    alwaysOnTop: true,
+    transparent: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
@@ -58,6 +67,23 @@ app.on('ready', async () => {
   const ElectronStore = (await import('electron-store')).default;
   store = new ElectronStore();
   await autoLogin(); 
+
+});
+
+ipcMain.on('resize-window', (event) => {
+  
+const { width: currentWidth, height: currentHeight } = win.getBounds();
+  
+  console.log(currentWidth)
+  console.log(currentHeight)
+
+  if (currentWidth == screenWidth * 0.15 && currentHeight == screenHeight) {
+    win.setSize(50, screenHeight);
+    win.setPosition(screenWidth - 50, 0);
+  } else {
+    win.setSize(screenWidth * 0.15, screenHeight)
+
+  }
 
 });
 
@@ -139,9 +165,9 @@ async function autoLogin() {
           userId: data.user.id 
         });
         console.log('User logged in automatically');
-		console.log(userId)
-
         userId = data.user.id
+        console.log(userId)
+
       } catch (error) {
         console.error('Automatic login failed:', error.message);
         store.delete('authToken');

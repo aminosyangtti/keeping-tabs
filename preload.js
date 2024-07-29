@@ -12,6 +12,7 @@ contextBridge.exposeInMainWorld('electron', {
     deleteOldItems: () => ipcRenderer.send('delete-old-items'),
     signOut: () => ipcRenderer.invoke('sign-out'),
     resetPassword: (email) => ipcRenderer.invoke('reset-password', { email }),
+    resizeWindow: () => ipcRenderer.send('resize-window'),
   },
   onAutoLoginSuccess: (callback) => ipcRenderer.on('auto-login-success', (event, data) => callback(data)),
   onAuthStateChanged: (callback) => ipcRenderer.on('auth-state-changed', (event, data) => callback(data)),

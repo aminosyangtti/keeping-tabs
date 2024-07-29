@@ -19,7 +19,7 @@ html, body {
     display: flex;
     justify-content: space-between;
     background-color: #00000000;
-    padding: 20px;
+    padding: 10px;
     flex-direction: row;
     width: 100%;
     align-items: center;
@@ -32,18 +32,27 @@ html, body {
     flex-direction: row;
     width: 100%;
     justify-content: flex-end;
-    padding-right: 20px;
+    padding-right: 10px;
     align-items: center;
 }
   #minimize-button {
     justify-content: flex-end;
     display: flex;
     flex-direction: column;
+    color: #747474;
+    font-weight: bolder;
+
 }
 
 #close-button {
     padding-left: 10px;
-    
+    color: #747474;
+    font-weight: bold;
+    font-family:'Courier New', Courier, monospace;
+}
+
+#resize-window-button {
+  cursor: pointer;
 }
   
 #auth-container {
@@ -131,7 +140,6 @@ html, body {
 
 
 #clipboard-container {
-    margin-top: 20px;
     flex-direction: column;
     align-items: center;
     overflow: hidden;
@@ -202,9 +210,9 @@ html, body {
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: space-between;
     width: 100%;
-    padding: 10px;
+    margin: 10px;
   }
   #menu-container div {
     display: flex;
@@ -262,7 +270,7 @@ html, body {
 
     #title {
         text-wrap: nowrap;
-        padding-left: 20px;
+        padding-left: 5px;
         /* color: #b6794e; */
         color: #4e8cb7;
         font-weight: bold;
@@ -274,7 +282,7 @@ html, body {
       }
 
     #icon {
-        padding-right: 5px;
+        padding-left: 10px;
         fill: #4e8cb7;
         /* fill: #b6794e; */
     
@@ -381,7 +389,7 @@ html, body {
 
     #title {
         text-wrap: nowrap;
-        padding-left: 20px;
+        padding-left: 5px;
         color: #b6794e;
         /* color: #4e8cb7; for light mode */
         font-weight: bold;
@@ -394,7 +402,7 @@ html, body {
 
 
     #icon {
-        padding-right: 5px;
+        padding-left: 10px;
         /* fill: #4e8cb7; */
         fill: #b6794e;
     
