@@ -76,14 +76,15 @@ const { width: currentWidth, height: currentHeight } = win.getBounds();
   
   console.log(currentWidth)
   console.log(currentHeight)
-
+  win.setResizable(true);
   if (currentWidth == screenWidth * 0.15 && currentHeight == screenHeight) {
     win.setSize(50, screenHeight);
     win.setPosition(screenWidth - 50, 0);
   } else {
     win.setSize(screenWidth * 0.15, screenHeight)
-
+    win.setPosition(screenWidth - (screenWidth * 0.15), 0);
   }
+  win.setResizable(false);
 
 });
 
@@ -217,13 +218,13 @@ ipcMain.handle('upload-clipboard-data', async() => {
               title: 'Saving...',
               message: 'No worries! Your password will be encrypted before storing it.',
             });
-            uploadeData(currentClipboardContent)
+            uploadData(currentClipboardContent)
             } else {
   
             } 
   
           } else {
-            uploadeData(currentClipboardContent)
+            uploadData(currentClipboardContent)
   
   
           }
@@ -232,7 +233,7 @@ ipcMain.handle('upload-clipboard-data', async() => {
   
 })
   
-async function uploadeData(currentClipboardContent) {
+async function uploadData(currentClipboardContent) {
     const encryptedData = CryptoJS.AES.encrypt(currentClipboardContent, process.env.SECRET_KEY).toString();
           
     try {
@@ -448,19 +449,22 @@ ipcMain.on('delete-broken-item', async (event, itemId) => {
   
 ipcMain.on('delete-old-items', async (event) => {
       const oneWeekAgo = new Date();
-      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+      oneWeekAgo.setHours(oneWeekAgo.getHours() - 168);
       const oneMonthAgo = new Date();
-      oneMonthAgo.setDate(oneMonthAgo.getDate() - 30);
-      const oneDayAgo = new Date();
-      oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+      oneMonthAgo.setHours(oneMonthAgo.getHours() - 720);
+      const now = new Date()
+      const startOfToday = new Date(now);
+      startOfToday.setHours(0, 0, 0, 0); // Set to start of day (00:00:00)
+      
       try {
   
         const result = await dialog.showMessageBox({
           type: 'question',
-          buttons: ['24 hours', '1 Week', '30 Days', 'Cancel'],
+          buttons: [' From today', ' older than 7 days', 'older than 30 days', 'All', 'Cancel'],
           title: 'Confirm Deletion',
-          message: `Delete items older than...`,
+          message: `Delete items...`,
         });
+
         if (result.response === 1) {
         const { data, error } = await supabase
           .from('clipboard')
@@ -468,27 +472,42 @@ ipcMain.on('delete-old-items', async (event) => {
           .lt('created_at', oneWeekAgo.toISOString())
           .eq('user_id', userId); 
         if (error) throw error;
-        console.log('Old items deleted from database:', data);
-        } else if (result.response === 2) {
+        console.log('Old items deleted from database:', 'older than 7 days');
+        } 
+        
+        else if (result.response === 2) {
           const { data, error } = await supabase
           .from('clipboard')
           .delete()
           .lt('created_at', oneMonthAgo.toISOString())
           .eq('user_id', userId);
         if (error) throw error;
-        console.log('Old items deleted from database:', data);
-        } else if (result.response === 0) {
+        console.log('Old items deleted from database:', 'older than 30 days');
+        } 
+        
+        else if (result.response === 0) {
           const { data, error } = await supabase
           .from('clipboard')
           .delete()
-          .lt('created_at', oneDayAgo.toISOString())
-          .eq('user_id', userId);
+          .gte('created_at', startOfToday.toISOString())
+          .lte('created_at', now.toISOString());
         if (error) throw error;
-        console.log('Old items deleted from database:', data);
-        }
+        console.log('Old items deleted from database:', 'from today');
+        } 
+        
+        else if (result.response === 3) {
+          const { data, error } = await supabase
+          .from('clipboard')
+            .delete()
+            .eq('user_id', userId);
+        if (error) throw error;
+        console.log('Old items deleted from database:', 'all');
+        } 
+        
       } catch (error) {
         console.error('Error deleting old items:', error.message);
       }
+
 });
 function deleteFolderContent(folderPath) {
       fs.readdir(folderPath, (err, files) => {
