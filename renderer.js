@@ -25,11 +25,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         clipboardContainer.style.display ='none'
         title.style.display = 'none'
         windowControls.style.display = 'none'
+
         // document.body.style.backgroundColor = '#1c1c1c40'
 
         isWindowHidden = true
       }
 
+    });
+
+    minimizeButton.addEventListener('click', async () => {
+      window.electron.ipcRenderer.minimizeWindow()
+    });
+
+    closeButton.addEventListener('click', async () => {
+      window.electron.ipcRenderer.closeWindow()
     });
     infoButton.addEventListener('click', async () => {
       document.getElementById('info').style.display = 'flex'
@@ -216,8 +225,15 @@ const resizeWindowButton = document.getElementById('resize-window-button')
 const signOutButton = document.getElementById('sign-out-button')
 const loginForm = document.getElementById('login-form')
 const title = document.getElementById('title')
+const icon = document.getElementById('icon')
+
 const titleBar = document.getElementById('title-bar')
 const windowControls = document.getElementById('window-controls')
+
+const minimizeButton = document.getElementById('minimize-button')
+const closeButton = document.getElementById('close-button')
+
+
 
 
 
@@ -290,6 +306,9 @@ async function startDataUpdates(userId, accessToken) {
     authContainer.style.display = 'none'
       clipboardContainer.style.display = 'flex'
       title.style.display = 'flex'
+      resizeWindowButton.style.display = 'flex'
+      icon.style.display = 'flex'
+      
     intervalId = setInterval(async () => {
       fetchClipboardData();
       window.electron.ipcRenderer.uploadClipboardData();

@@ -13,6 +13,7 @@ const crypto = require('crypto');
 const CryptoJS = require('crypto-js')
 const ogs = require('open-graph-scraper');
 const log = require('electron-log');
+const isDevelopment = process.env.NODE_ENV === 'development';
 
 app.commandLine.appendSwitch('enable-transparent-visuals');
 app.commandLine.appendSwitch('disable-gpu');
@@ -112,6 +113,14 @@ app.on('ready', async () => {
   store = new ElectronStore();
   await autoLogin(); 
 
+});
+
+ipcMain.on('minimize-window', () => {
+  win.minimize();
+});
+
+ipcMain.on('close-window', () => {
+  win.close();
 });
 
 ipcMain.on('resize-window', (event) => {
