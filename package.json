@@ -4,15 +4,17 @@
   "main": "main.js",
   "scripts": {
     "start": "NODE_ENV=development electron .",
-    "changelog": "auto-changelog -p"
+    "changelog": "auto-changelog -p",
+    "build": "electron-builder --win --linux"
   },
-  "author": "",
+  "author": "aminosyangtti <aminosyangtti@example.com>",
   "license": "ISC",
   "description": "",
   "dependencies": {
     "@supabase/supabase-js": "^2.44.4",
     "auto-changelog": "^2.4.0",
     "base64-arraybuffer": "^1.0.2",
+    "electron-log": "^5.1.7",
     "crypto-js": "^4.2.0",
     "dotenv": "^16.4.5",
     "electron-store": "^10.0.0",
@@ -26,7 +28,7 @@
     "electron-builder": "^24.13.3"
   },
   "build": {
-    "appId": "com.aminosyangtti.keeping-tabs",
+    "appId": "com.aminosyangtti.keeping-tabs", 
     "directories": {
       "output": "dist",
       "buildResources": "build"
@@ -40,11 +42,16 @@
     ],
     "win": {
       "target": "nsis",
-      "icon": "build/icon.ico"
+      "icon": "build/icon.png"
     },
     "linux": {
-      "target": "AppImage",
+      "target": ["AppImage", "deb"],
       "icon": "build/icon.png"
-    }
+    },
+    "mac": {
+      "target": ["dmg", "zip"],
+      "icon": "build/icon.png"
+ }
+
   }
 }
