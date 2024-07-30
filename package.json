@@ -4,8 +4,7 @@
   "main": "main.js",
   "scripts": {
     "start": "NODE_ENV=development electron .",
-    "changelog": "auto-changelog -p",
-    "build": "electron-builder"
+    "changelog": "auto-changelog -p"
   },
   "author": "",
   "license": "ISC",
@@ -38,14 +37,6 @@
         "owner": "aminosyangtti",
         "repo": "keeping-tabs"
       }
-    ],
-  "files": [
-      "build/**/*",
-      "main.js",
-      "package.json"
-    ],
-    "extraResources": [
-      "assets/**"
     ],
     "win": {
       "target": "nsis",

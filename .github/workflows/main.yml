@@ -1,102 +1,36 @@
-name: Build and Pre-Release
+name: Build/release
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
+on: push
 
 jobs:
-  build:
+  release:
     runs-on: ${{ matrix.os }}
+
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [macos-latest, ubuntu-latest, windows-latest]
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Check out Git repository
+        uses: actions/checkout@v1
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '16'
+      - name: Install Node.js, NPM and Yarn
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16
 
-    - name: Install dependencies
-      run: npm install
-      env:
-        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-        SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-        SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      - name: Build/release Electron app
+        uses: samuelmeuli/action-electron-builder@v1
+        with:
+          # GitHub token, automatically provided to the action
+          # (No need to define this secret in the repo settings)
+          github_token: ${{ secrets.github_token }}
 
-    - name: Build Electron App
-      run: npm run build
-      env:
-        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-        SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-        SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          # If the commit is tagged with a version (e.g. "v1.0.0"),
+          # release the app after building
+          release: ${{ startsWith(github.ref, 'refs/tags/v') }}
 
-    - name: Package Electron App
-      run: npm run dist
-      env:
-        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-        SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-        SECRET_KEY: ${{ secrets.SECRET_KEY }}
 
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: electron-app-${{ matrix.os }}
-        path: dist/*
 
-  release:
-    needs: build
-    runs-on: ubuntu-latest
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Download Artifacts (Ubuntu)
-      uses: actions/download-artifact@v2
-      with:
-        name: electron-app-ubuntu-latest
-        path: dist
-
-    - name: Download Artifacts (Windows)
-      uses: actions/download-artifact@v2
-      with:
-        name: electron-app-windows-latest
-        path: dist
-
-    - name: Create GitHub Pre-Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: v1.0.0
-        release_name: 'Pre-Release v1.0.0'
-        body: 'Description of the pre-release'
-        draft: false
-        prerelease: true
-
-    - name: Upload Release Assets (Ubuntu)
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: dist/electron-app-ubuntu.zip
-        asset_name: electron-app-ubuntu.zip
-        asset_content_type: application/zip
-
-    - name: Upload Release Assets (Windows)
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: dist/electron-app-windows.zip
-        asset_name: electron-app-windows.zip
-        asset_content_type: application/zip
+        
