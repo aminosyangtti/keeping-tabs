@@ -78,6 +78,8 @@ document.addEventListener('DOMContentLoaded', async () => {
           startDataUpdates(null, null)
       } catch (error) {
           console.error('Error signing out:', error.message);
+          alert('Error signing out: ' + error.message);
+
       }
     });
 
@@ -124,6 +126,7 @@ document.addEventListener('DOMContentLoaded', async () => {
               
           } catch (error) {
               console.error('Error sending password reset email:', error.message);
+              alert('Error sending password reset email: ' + error.message);
           }
       } else {
           alert('Please enter your email.');
@@ -145,6 +148,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     } catch (error) {
       console.error('Registration error:', error.message);
+      alert('Registration error: ' + error.message);
     }
     });
   
@@ -157,14 +161,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
       const response = await window.electron.ipcRenderer.loginUser(email, password);
       console.log('Logged in:', response);
-      localStorage.setItem('accessToken', response.session.access_token);
-      window.localStorage.setItem('userId', response.session.user.id);
+      // window.localStorage.setItem('accessToken', response.session.access_token);
+      // window.localStorage.setItem('userId', response.session.user.id);
       
       startDataUpdates(response.session.user.id, response.session.access_token)
 
      
     } catch (error) {
       console.error('Login error:', error.message);
+      alert('Failed to log in: ' + error.message);
     }
     });
 
@@ -174,8 +179,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     window.electron.onAutoLoginSuccess(({ accessToken, userId }) => {
       console.log('Auto-login successful. Access token:', userId);
-      window.localStorage.setItem('userId', userId);
-      window.localStorage.setItem('accessToken', accessToken);
+      // window.localStorage.setItem('userId', userId);
+      // window.localStorage.setItem('accessToken', accessToken);
       
       startDataUpdates(userId, accessToken)
       
@@ -184,8 +189,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   
     window.electron.onAuthStateChanged(({ accessToken, userId }) => {
       console.log('Auth state changed. New access token:', userId);
-      window.localStorage.setItem('userId', userId);
-      window.localStorage.setItem('accessToken', accessToken);
+      // window.localStorage.setItem('userId', userId);
+      // window.localStorage.setItem('accessToken', accessToken);
       // startDataUpdates()
       // title.style.display = 'flex'
 
@@ -193,6 +198,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   } catch (error) {
     console.error('Error during initialization:', error);
+    alert( error.message);
     }
 
 });
@@ -329,6 +335,8 @@ function copy(content, itemElement) {
      })
       .catch(err => {
         console.error('Failed to copy text: ', err);
+        alert('Failed to copy text: ' + error.message);
+
      });
   });
 }

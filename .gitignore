@@ -4,4 +4,6 @@ build/
 .env
 key.js
 images/
+test/
 
+out/

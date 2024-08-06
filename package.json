@@ -8,26 +8,28 @@
   },
   "author": "aminosyangtti <aminosyangtti@example.com>",
   "license": "ISC",
-  "description": "",
+  "description": "A clipboard management app that seamlessly synchronizes your clipboard content across all your devices.",
   "dependencies": {
     "@supabase/supabase-js": "^2.44.4",
     "auto-changelog": "^2.4.0",
     "base64-arraybuffer": "^1.0.2",
-    "electron-log": "^5.1.7",
     "crypto-js": "^4.2.0",
     "dotenv": "^16.4.5",
+    "electron-log": "^5.1.7",
     "electron-store": "^10.0.0",
+    "electron-updater": "^6.2.1",
     "fs": "^0.0.1-security",
     "open-graph-scraper": "^6.7.0",
     "util": "^0.12.5",
     "uuid": "^10.0.0"
   },
   "devDependencies": {
-    "electron": "^31.3.0",
+    "electron": "^31.3.1",
     "electron-builder": "^24.13.3"
   },
   "build": {
-    "appId": "com.aminosyangtti.keeping-tabs", 
+    "appId": "com.aminosyangtti.keeping-tabs",
+    "productName": "Keeping Tabs",
     "directories": {
       "output": "dist",
       "buildResources": "build"
@@ -44,13 +46,19 @@
       "icon": "build/icon.png"
     },
     "linux": {
-      "target": ["AppImage", "deb"],
+      "target": [
+        "AppImage",
+        "deb",
+        "snap"
+      ],
       "icon": "build/icon.png"
     },
     "mac": {
-      "target": ["dmg", "zip"],
+      "target": [
+        "dmg",
+        "zip"
+      ],
       "icon": "build/icon.png"
- }
-
+    }
   }
 }
