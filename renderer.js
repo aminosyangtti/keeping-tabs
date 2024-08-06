@@ -145,6 +145,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       console.log('Registration successful:', response);
       alert('Registration successful! You can now log in.');
       registrationSection.style.display = 'none'
+      startDataUpdates(response.session.user.id, response.session.access_token)
+
 
     } catch (error) {
       console.error('Registration error:', error.message);

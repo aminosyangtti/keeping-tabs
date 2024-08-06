@@ -1,12 +1,10 @@
 {
   "name": "keeping-tabs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "main.js",
   "scripts": {
     "start": "NODE_ENV=development electron .",
-    "changelog": "auto-changelog -p",
-    "package:dev": "NODE_ENV=development npx electron-builder --dir",
-    "dist:dev": "NODE_ENV=development npx electron-builder"
+    "changelog": "auto-changelog -p"
   },
   "author": "aminosyangtti <aminosyangtti@example.com>",
   "license": "ISC",
