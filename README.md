@@ -30,11 +30,11 @@
 ## Installation
 
  ### For Windows:
-  #### download: 
+  > download: 
    - [.exe](https://github.com/aminosyangtti/keeping-tabs/releases/download/v1.0.1/keeping-tabs-Setup-1.0.1.exe)
     
  ### For Linux:
   
-  #### download: 
+  > download: 
   - [.deb](https://github.com/aminosyangtti/keeping-tabs/releases/download/v1.0.1/keeping-tabs_1.0.1_amd64.deb)
-  - [.AppImage](https://github.com/aminosyangtti/keeping-tabs/releases/download/v1.0.1/Keeping.Tabs-1.0.1.AppImage)
+  - [.AppImage](https://github.com/aminosyangtti/keeping-tabs/releases/download/v1.0.1/keeping-tabs-1.0.1.AppImage)
