@@ -31,7 +31,7 @@
 
  ### For Windows:
   #### download: 
-   - [.exe](https://github.com/aminosyangtti/keeping-tabs/releases/download/v1.0.1/Keeping.Tabs.Setup.1.0.1.exe)
+   - [.exe](https://github.com/aminosyangtti/keeping-tabs/releases/download/v1.0.1/keeping-tabs-Setup-1.0.1.exe)
     
  ### For Linux:
   
