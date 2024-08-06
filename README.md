@@ -31,10 +31,10 @@
 
  ### For Windows:
   #### download: 
-   - [.exe](https://github.com/aminosyangtti/keeping-tabs/releases/download/v1.0.0/Keeping.Tabs.Setup.1.0.0.exe)
+   - [.exe](https://github.com/aminosyangtti/keeping-tabs/releases/download/v1.0.1/Keeping.Tabs.Setup.1.0.1.exe)
     
  ### For Linux:
   
   #### download: 
-  - [.deb](https://github.com/aminosyangtti/keeping-tabs/releases/download/v1.0.0/keeping-tabs_1.0.0_amd64.deb)
-  - [.AppImage](https://github.com/aminosyangtti/keeping-tabs/releases/download/v1.0.0/Keeping.Tabs-1.0.0.AppImage)
+  - [.deb](https://github.com/aminosyangtti/keeping-tabs/releases/download/v1.0.1/keeping-tabs_1.0.1_amd64.deb)
+  - [.AppImage](https://github.com/aminosyangtti/keeping-tabs/releases/download/v1.0.1/Keeping.Tabs-1.0.1.AppImage)
