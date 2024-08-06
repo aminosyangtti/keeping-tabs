@@ -28,7 +28,6 @@ jobs:
         uses: samuelmeuli/action-electron-builder@v1.6.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          args: "-p always"
           release: ${{ startsWith(github.ref, 'refs/tags/v') }}
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
