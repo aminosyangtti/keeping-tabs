@@ -26,11 +26,11 @@ jobs:
 
       - name: Build/Release Electron app
         uses: samuelmeuli/action-electron-builder@v1.6.0
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-          SECRET_KEY: ${{ secrets.SECRET_KEY }}
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }} # Ensure the correct secret name is used
           args: "-p always"
           release: ${{ startsWith(github.ref, 'refs/tags/v') }}
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}

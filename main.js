@@ -29,6 +29,7 @@ let lastClipboardContent = '';
 let lastImageHash = '';
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
+const SECRET_KEY = process.env.SECRET_KEY
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -64,9 +65,7 @@ function createWindow() {
   if (process.env.NODE_ENV === 'development') {
     win.webContents.openDevTools({mode:'undocked'});
     }
-    win.webContents.openDevTools({mode:'undocked'});
-
-    }
+  }
   
 autoUpdater.on('update-available', (info) => {
     log.info('Update available.');
@@ -93,7 +92,7 @@ autoUpdater.on('update-available', (info) => {
       if (result.response === 0) {
         autoUpdater.quitAndInstall();
       }
-    });
+      });
     });
   
   autoUpdater.on('checking-for-update', () => {
@@ -135,7 +134,7 @@ ipcMain.handle('login-user', async (event, { email, password }) => {
 
 ipcMain.handle('sign-out', async () => {
   const result = await dialog.showMessageBox({
-    type: 'error',
+    type: 'info',
     buttons: ['Yes', 'No'],
     title: 'Log out',
     message: 'Do you want to log out?',
@@ -461,7 +460,7 @@ async function autoLogin() {
 
   
 async function uploadData(currentClipboardContent) {
-    const encryptedData = CryptoJS.AES.encrypt(currentClipboardContent, '06d8cbb1c736b33a577e59101efc14c9').toString();
+    const encryptedData = CryptoJS.AES.encrypt(currentClipboardContent, SECRET_KEY).toString();
           
     try {
       const { data, error } = await supabase
@@ -610,7 +609,7 @@ function isPassword(text) {
 
 function decrypt(encryptedData) {
       try {
-        const bytes = CryptoJS.AES.decrypt(encryptedData, '06d8cbb1c736b33a577e59101efc14c9');
+        const bytes = CryptoJS.AES.decrypt(encryptedData, SECRET_KEY);
         const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
         return decryptedData;
       } catch (error) {
