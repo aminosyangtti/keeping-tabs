@@ -69,32 +69,25 @@ function createWindow() {
   
 autoUpdater.checkForUpdatesAndNotify();
 autoUpdater.on('update-available', (info) => {
-    log.info('Update available.');
-      dialog.showMessageBox({
-        type: 'info',
-      title: 'Update Available',
-      message: 'A new version is available. Do you want to update now?',
-      buttons: ['Update', 'Later']
-    }).then(result => {
-      if (result.response === 0) {
-        autoUpdater.downloadUpdate();
-      }
-    });
-    });
+  log.info('Update available.');
+  dialog.showMessageBox({
+    type: 'info',
+    title: 'Update available',
+    message: 'A new update is available. Downloading now...',
+  });
+});
   
-  autoUpdater.on('update-downloaded', (info) => {
-    log.info('Update downloaded.');
-      dialog.showMessageBox({
-        type: 'info',
-      title: 'Update Ready',
-      message: 'Install and restart now?',
-        buttons: ['Yes', 'Later']
-    }).then(result => {
-      if (result.response === 0) {
-        autoUpdater.quitAndInstall();
-      }
-      });
-    });
+autoUpdater.on('update-downloaded', (info) => {
+  log.info('Update downloaded.');
+  dialog.showMessageBox({
+    type: 'info',
+    title: 'Update ready',
+    message: 'A new update is ready. It will be installed on restart. Restart now?',
+    buttons: ['Yes', 'Later']
+  }).then((returnValue) => {
+    if (returnValue.response === 0) autoUpdater.quitAndInstall();
+  });
+});
   
   autoUpdater.on('checking-for-update', () => {
     log.info('Checking for update...');
@@ -106,7 +99,7 @@ autoUpdater.on('update-available', (info) => {
 
   autoUpdater.on('error', (err) => {
     log.error('Error in auto-updater. ' + err);
-    dialog.showErrorBox('Update Error', 'An error occurred while updating the application. Please try again later.' + err);
+    dialog.showErrorBox('Update Error: ' + err);
   });
 
 
