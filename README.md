@@ -8,7 +8,8 @@
 ## Screenshots
 
 ![image](https://github.com/user-attachments/assets/054ee953-7c3f-49b5-b78b-6a564b140dfc)
- ![image](https://github.com/user-attachments/assets/39026c14-65cb-4a2c-9d6e-66107a255785) ![Screenshot from 2024-08-06 21-08-03](https://github.com/user-attachments/assets/6a0e38a6-f49a-48e0-8b24-0f1851f22144) 
+ ![Screenshot from 2024-08-06 21-08-03](https://github.com/user-attachments/assets/6a0e38a6-f49a-48e0-8b24-0f1851f22144) 
+  ![image](https://github.com/user-attachments/assets/39026c14-65cb-4a2c-9d6e-66107a255785)
 
 
 ## Features
