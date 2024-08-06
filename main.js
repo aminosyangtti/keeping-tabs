@@ -1,5 +1,6 @@
-const { app, BrowserWindow, ipcMain, clipboard, screen, dialog, autoUpdater } = require('electron');
+const { app, BrowserWindow, ipcMain, clipboard, screen, dialog} = require('electron');
 const path = require('path');
+const { autoUpdater } = require('electron-updater');
 // const { supabase } = require('./supabase');
 const { createClient } = require('@supabase/supabase-js');
 const dotenv = require('dotenv');
@@ -13,12 +14,11 @@ const crypto = require('crypto');
 const CryptoJS = require('crypto-js')
 const ogs = require('open-graph-scraper');
 const log = require('electron-log');
-const isDevelopment = process.env.NODE_ENV === 'development';
 
 app.commandLine.appendSwitch('enable-transparent-visuals');
 app.commandLine.appendSwitch('disable-gpu');
+log.transports.file.level = 'info';
 autoUpdater.logger = log;
-autoUpdater.logger.transports.file.level = 'info';
 log.info('App starting...');
 
 let store;
@@ -55,7 +55,8 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
       contextIsolation: true,
-      webSecurity: true
+      webSecurity: true,
+      enableRemoteModule: true
     },
   });
 
@@ -63,92 +64,51 @@ function createWindow() {
   if (process.env.NODE_ENV === 'development') {
     win.webContents.openDevTools({mode:'undocked'});
     }
-    if (!isDevelopment) {
-      autoUpdater.checkForUpdatesAndNotify();
+    win.webContents.openDevTools({mode:'undocked'});
+
     }
   
-    autoUpdater.on('update-available', () => {
-      log.info('Update available');
+autoUpdater.on('update-available', (info) => {
+    log.info('Update available.');
       dialog.showMessageBox({
         type: 'info',
-        title: 'Update available',
-        message: 'A new update is available.',
-      });
+      title: 'Update Available',
+      message: 'A new version is available. Do you want to update now?',
+      buttons: ['Update', 'Later']
+    }).then(result => {
+      if (result.response === 0) {
+        autoUpdater.downloadUpdate();
+      }
+    });
     });
   
-    autoUpdater.on('update-not-available', () => {
-      log.info('Update not available');
-    });
-  
-    autoUpdater.on('error', (err) => {
-      log.error('Error in auto-updater:', err.message);
-      dialog.showMessageBox({
-        type: 'error',
-        title: 'Update error',
-        message: 'Error in auto-updater: ' + err,
-      });
-    });
-  
-    autoUpdater.on('update-downloaded', () => {
-      log.info('Update downloaded');
+  autoUpdater.on('update-downloaded', (info) => {
+    log.info('Update downloaded.');
       dialog.showMessageBox({
         type: 'info',
-        title: 'Update ready',
-        message: 'A new update is ready. It will be installed on restart. Restart now?',
+      title: 'Update Ready',
+      message: 'Install and restart now?',
         buttons: ['Yes', 'Later']
-      }).then((returnValue) => {
-        if (returnValue.response === 0) autoUpdater.quitAndInstall();
-      });
+    }).then(result => {
+      if (result.response === 0) {
+        autoUpdater.quitAndInstall();
+      }
+    });
     });
   
-}
+  autoUpdater.on('checking-for-update', () => {
+    log.info('Checking for update...');
+  });
 
-
-
-
-
-app.on('ready', async () => {
-  createWindow();
-  const ElectronStore = (await import('electron-store')).default;
-  store = new ElectronStore();
-  await autoLogin(); 
-
+  autoUpdater.on('update-not-available', (info) => {
+    log.info('Update not available.');
 });
 
-ipcMain.on('minimize-window', () => {
-  win.minimize();
-});
+  autoUpdater.on('error', (err) => {
+    log.error('Error in auto-updater. ' + err);
+    dialog.showErrorBox('Update Error', 'An error occurred while updating the application. Please try again later.' + err);
+  });
 
-ipcMain.on('close-window', () => {
-  win.close();
-});
-
-ipcMain.on('resize-window', (event) => {
-  
-const { width: currentWidth, height: currentHeight } = win.getBounds();
-  
-  console.log(currentWidth)
-  console.log(currentHeight)
-  win.setResizable(true);
-  if (currentWidth == screenWidth * 0.15 && currentHeight == screenHeight) {
-    win.setSize(50, screenHeight);
-    win.setPosition(screenWidth - 50, 0);
-  } else {
-    win.setSize(screenWidth * 0.15, screenHeight)
-    win.setPosition(screenWidth - (screenWidth * 0.15), 0);
-  }
-  win.setResizable(false);
-
-});
-
-app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
-});
-
-
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit();
-});
 
   
 ipcMain.handle('register-user', async (event, { email, password }) => {
@@ -203,54 +163,6 @@ ipcMain.handle('reset-password', async (event, { email }) => {
 });
 
 
-async function autoLogin() {
-    const authToken = store.get('authToken');
-    const refreshToken = store.get('refreshToken');
-  
-    if (authToken && refreshToken) {
-      try {
-        const { data, error } = await supabase.auth.setSession({ access_token: authToken, refresh_token: refreshToken });
-        // console.log(data.user.id)
-  
-        if (error) throw error;
-
-        win.webContents.send('auto-login-success', {
-          accessToken: authToken,
-          userId: data.user.id 
-        });
-        console.log('User logged in automatically');
-        userId = data.user.id
-        console.log(userId)
-
-      } catch (error) {
-        console.error('Automatic login failed:', error.message);
-        store.delete('authToken');
-        store.delete('refreshToken');
-      }
-    } else {
-      console.log('No stored tokens found');
-    }
-}
-  
-supabase.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_IN') {
-      store.set('authToken', session.access_token);
-      store.set('refreshToken', session.refresh_token);
-      if (win) {
-        win.webContents.send('auth-state-changed', {
-          accessToken: session.access_token,
-          userId: session.user.id 
-        });
-        userId = session.user.id
-      }
-    } else if (event === 'SIGNED_OUT') {
-      store.delete('authToken');
-      store.delete('refreshToken');
-    }
-});
-  
-
-
 ipcMain.handle('upload-clipboard-data', async() => {
     // handleClipboardImage()
     const currentClipboardContent = clipboard.readText();
@@ -286,28 +198,32 @@ ipcMain.handle('upload-clipboard-data', async() => {
   
 })
   
-async function uploadData(currentClipboardContent) {
-    const encryptedData = CryptoJS.AES.encrypt(currentClipboardContent, process.env.SECRET_KEY).toString();
-          
-    try {
-      const { data, error } = await supabase
-        .from('clipboard')
-        .insert({ 
-          content: encryptedData,
-          user_id: userId
-         })
-        .select();
+ipcMain.on('minimize-window', () => {
+  win.minimize();
+});
+
+ipcMain.on('close-window', () => {
+  win.close();
+});
+
+ipcMain.on('resize-window', (event) => {
   
-         lastClipboardTextId = data[0].id;
-         deleteMatchingItems(lastClipboardTextId)
+const { width: currentWidth, height: currentHeight } = win.getBounds();
   
-  
-      if (error) throw error;
-      console.log('Clipboard content added:', encryptedData);
-    } catch (error) {
-      console.error('Error adding clipboard content:', error.message);
-    }
-}
+  console.log(currentWidth)
+  console.log(currentHeight)
+  win.setResizable(true);
+  if (currentWidth == screenWidth * 0.15 && currentHeight == screenHeight) {
+    win.setSize(50, screenHeight);
+    win.setPosition(screenWidth - 50, 0);
+  } else {
+    win.setSize(screenWidth * 0.15, screenHeight)
+    win.setPosition(screenWidth - (screenWidth * 0.15), 0);
+  }
+  win.setResizable(false);
+
+});
+
   
 ipcMain.handle('fetch-clipboard-data', async () => {
   
@@ -364,95 +280,6 @@ ipcMain.handle('fetch-metadata', async (event, url) => {
       }
 });
 
-async function handleClipboardImage() {
-      const currentClipboardImage = clipboard.readImage();
-    
-      // console.log(currentClipboardImage)
-      
-        if (!currentClipboardImage.isEmpty()) {
-          const imageBuffer = currentClipboardImage.toPNG();
-          const imageId = uuidv4();
-          const imagePath = path.join(__dirname, `images/${imageId}.png`);
-          const folderPath = path.join(__dirname, 'images');
-          await promisify(fs.writeFile)(imagePath, imageBuffer);
-          console.log('Image saved:', imagePath);
-      
-          const base64ImageData = imageBuffer.toString('base64');
-          const currentImageHash = crypto.createHash('sha256').update(base64ImageData).digest('hex');
-      
-          if (currentImageHash !== lastImageHash) {
-            lastImageHash = currentImageHash;
-      
-            try {
-              const arrayBuffer = decode(base64ImageData);
-              const { data, error } = await supabase
-                .storage
-                .from('images')
-                .upload(`${imageId}.png`, arrayBuffer, {
-                  contentType: 'image/png',
-                  user_id: userId
-                });
-      
-              if (error) throw error;
-      
-              await supabase.from('clipboard').insert({
-                image_url: `${SUPABASE_URL}/storage/v1/object/public/images/${imageId}.png`,
-              });
-              console.log('Image URL added to database:', `${SUPABASE_URL}/storage/v1/object/public/images/${imageId}.png`);
-      
-            
-              deleteFolderContent(folderPath);
-            } catch (error) {
-              console.error('Error handling clipboard image:', error.message);
-            }
-          } else {
-            console.log('No change detected in clipboard image.');
-            const filePath = path.join(__dirname, `images/${imageId}.png`);
-            // fs.unlink(filePath, err => {
-            //   if (err) {
-            //     console.error(`Error deleting file ${filePath}:`, err.message);
-            //   } else {
-            //     console.log(`Successfully deleted file ${filePath}`);
-            //   }})
-          }
-        }
-}
-    
-
-async function deleteMatchingItems(lastClipboardTextId) {
-      const currentClipboardContent = clipboard.readText();
-  
-    try {
-      let { data: items, error } = await supabase
-        .from('clipboard')
-        .select('*')
-        .eq('user_id', userId);
-  
-      if (error) throw error;
-  
-      const matchingItems = items
-        .filter(item => decrypt(item.content) === currentClipboardContent)
-        .filter(item => item.id !== lastClipboardTextId);
-  
-      const itemIds = matchingItems.map(item => item.id);
-  
-      if (itemIds.length > 0) {
-        const { error: deleteError } = await supabase
-          .from('clipboard')
-          .delete()
-          .in('id', itemIds)
-          .eq('user_id', userId);
-  
-        if (deleteError) throw deleteError;
-  
-        console.log('Deleted matching items:', itemIds);
-      } else {
-        console.log('No matching items found.');
-      }
-    } catch (error) {
-      console.error('Error deleting matching items:', error.message);
-    }
-}
   
   
 ipcMain.on('delete-item', async (event, itemId) => {
@@ -562,6 +389,190 @@ ipcMain.on('delete-old-items', async (event) => {
       }
 
 });
+
+supabase.auth.onAuthStateChange((event, session) => {
+  if (event === 'SIGNED_IN') {
+    store.set('authToken', session.access_token);
+    store.set('refreshToken', session.refresh_token);
+    if (win) {
+      win.webContents.send('auth-state-changed', {
+        accessToken: session.access_token,
+        userId: session.user.id 
+      });
+      userId = session.user.id
+    }
+  } else if (event === 'SIGNED_OUT') {
+    store.delete('authToken');
+    store.delete('refreshToken');
+  }
+});
+
+
+app.on('ready', async () => {
+  createWindow();
+  const ElectronStore = (await import('electron-store')).default;
+  store = new ElectronStore();
+  await autoLogin(); 
+
+});
+
+app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+});
+
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') app.quit();
+});
+
+
+
+async function autoLogin() {
+    const authToken = store.get('authToken');
+    const refreshToken = store.get('refreshToken');
+  
+    if (authToken && refreshToken) {
+      try {
+        const { data, error } = await supabase.auth.setSession({ access_token: authToken, refresh_token: refreshToken });
+        // console.log(data.user.id)
+  
+        if (error) throw error;
+
+        win.webContents.send('auto-login-success', {
+          accessToken: authToken,
+          userId: data.user.id 
+        });
+        console.log('User logged in automatically');
+        userId = data.user.id
+        console.log(userId)
+
+      } catch (error) {
+        console.error('Automatic login failed:', error.message);
+        store.delete('authToken');
+        store.delete('refreshToken');
+      }
+    } else {
+      console.log('No stored tokens found');
+    }
+}
+  
+
+  
+
+  
+async function uploadData(currentClipboardContent) {
+    const encryptedData = CryptoJS.AES.encrypt(currentClipboardContent, '06d8cbb1c736b33a577e59101efc14c9').toString();
+          
+    try {
+      const { data, error } = await supabase
+        .from('clipboard')
+        .insert({ 
+          content: encryptedData,
+          user_id: userId
+         })
+        .select();
+  
+         lastClipboardTextId = data[0].id;
+         deleteMatchingItems(lastClipboardTextId)
+  
+  
+      if (error) throw error;
+      console.log('Clipboard content added:', encryptedData);
+    } catch (error) {
+      console.error('Error adding clipboard content:', error.message);
+    }
+}
+  
+async function handleClipboardImage() {
+      const currentClipboardImage = clipboard.readImage();
+    
+      // console.log(currentClipboardImage)
+      
+        if (!currentClipboardImage.isEmpty()) {
+          const imageBuffer = currentClipboardImage.toPNG();
+          const imageId = uuidv4();
+          const imagePath = path.join(__dirname, `images/${imageId}.png`);
+          const folderPath = path.join(__dirname, 'images');
+          await promisify(fs.writeFile)(imagePath, imageBuffer);
+          console.log('Image saved:', imagePath);
+      
+          const base64ImageData = imageBuffer.toString('base64');
+          const currentImageHash = crypto.createHash('sha256').update(base64ImageData).digest('hex');
+      
+          if (currentImageHash !== lastImageHash) {
+            lastImageHash = currentImageHash;
+      
+            try {
+              const arrayBuffer = decode(base64ImageData);
+              const { data, error } = await supabase
+                .storage
+                .from('images')
+                .upload(`${imageId}.png`, arrayBuffer, {
+                  contentType: 'image/png',
+                  user_id: userId
+                });
+      
+              if (error) throw error;
+      
+              await supabase.from('clipboard').insert({
+                image_url: `${SUPABASE_URL}/storage/v1/object/public/images/${imageId}.png`,
+              });
+              console.log('Image URL added to database:', `${SUPABASE_URL}/storage/v1/object/public/images/${imageId}.png`);
+      
+            
+              deleteFolderContent(folderPath);
+            } catch (error) {
+              console.error('Error handling clipboard image:', error.message);
+            }
+          } else {
+            console.log('No change detected in clipboard image.');
+            const filePath = path.join(__dirname, `images/${imageId}.png`);
+            // fs.unlink(filePath, err => {
+            //   if (err) {
+            //     console.error(`Error deleting file ${filePath}:`, err.message);
+            //   } else {
+            //     console.log(`Successfully deleted file ${filePath}`);
+            //   }})
+          }
+        }
+}
+    
+
+async function deleteMatchingItems(lastClipboardTextId) {
+      const currentClipboardContent = clipboard.readText();
+  
+    try {
+      let { data: items, error } = await supabase
+        .from('clipboard')
+        .select('*')
+        .eq('user_id', userId);
+  
+      if (error) throw error;
+  
+      const matchingItems = items
+        .filter(item => decrypt(item.content) === currentClipboardContent)
+        .filter(item => item.id !== lastClipboardTextId);
+  
+      const itemIds = matchingItems.map(item => item.id);
+  
+      if (itemIds.length > 0) {
+        const { error: deleteError } = await supabase
+          .from('clipboard')
+          .delete()
+          .in('id', itemIds)
+          .eq('user_id', userId);
+  
+        if (deleteError) throw deleteError;
+  
+        console.log('Deleted matching items:', itemIds);
+      } else {
+        console.log('No matching items found.');
+      }
+    } catch (error) {
+      console.error('Error deleting matching items:', error.message);
+    }
+}
+ 
 function deleteFolderContent(folderPath) {
       fs.readdir(folderPath, (err, files) => {
         if (err) {
@@ -599,7 +610,7 @@ function isPassword(text) {
 
 function decrypt(encryptedData) {
       try {
-        const bytes = CryptoJS.AES.decrypt(encryptedData, process.env.SECRET_KEY);
+        const bytes = CryptoJS.AES.decrypt(encryptedData, '06d8cbb1c736b33a577e59101efc14c9');
         const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
         return decryptedData;
       } catch (error) {
