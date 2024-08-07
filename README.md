@@ -51,3 +51,8 @@
   > download: 
   - [.deb](https://github.com/aminosyangtti/keeping-tabs/releases/download/v1.0.1/keeping-tabs_1.0.1_amd64.deb)
   - [.AppImage](https://github.com/aminosyangtti/keeping-tabs/releases/download/v1.0.1/keeping-tabs-1.0.1.AppImage)
+
+ ### For MacOS:
+  
+  > download: 
+  - [.dmg](https://github.com/aminosyangtti/keeping-tabs/releases/download/v1.0.1/Keeping-Tabs-1.0.1-arm64.dmg) (untested)
