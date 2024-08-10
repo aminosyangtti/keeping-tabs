@@ -57,9 +57,15 @@
   - [.AppImage](https://github.com/aminosyangtti/keeping-tabs/releases/download/v1.0.1/keeping-tabs-1.0.1.AppImage)
     
   > or:
-  <a href="https://snapcraft.io/keeping-tabs">
+    <a href="https://snapcraft.io/keeping-tabs">
   <img alt="Get it from the Snap Store" src="https://snapcraft.io/static/images/badges/en/snap-store-black.svg" />
 </a>
+
+  > or install using the command line
+  ```bash
+sudo snap install keeping-tabs
+```
+
 
  ### For MacOS:
   
