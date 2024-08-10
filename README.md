@@ -1,3 +1,7 @@
+<a href="https://snapcraft.io/keeping-tabs">
+  <img alt="keeping-tabs" src="https://snapcraft.io/keeping-tabs/badge.svg" />
+</a>
+
 # Keeping Tabs
 
 ## Description
