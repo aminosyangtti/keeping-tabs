@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           await window.electron.ipcRenderer.signOut();
           window.localStorage.removeItem('userId');
           window.localStorage.removeItem('accessToken');
-          startDataUpdates(null, null)
+          startUIUpdates(null, null)
       } catch (error) {
           console.error('Error signing out:', error.message);
           alert('Error signing out: ' + error.message);
@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       console.log('Registration successful:', response);
       alert('Registration successful! You can now log in.');
       registrationSection.style.display = 'none'
-      startDataUpdates(response.session.user.id, response.session.access_token)
+      startUIUpdates(response.session.user.id, response.session.access_token)
 
 
     } catch (error) {
@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       // window.localStorage.setItem('accessToken', response.session.access_token);
       // window.localStorage.setItem('userId', response.session.user.id);
       
-      startDataUpdates(response.session.user.id, response.session.access_token)
+      startUIUpdates(response.session.user.id, response.session.access_token)
 
      
     } catch (error) {
@@ -175,17 +175,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     });
 
-    
+    window.electron.onGlobalCopy(() => {
+      fetchClipboardData();
+      showNotification();
+
+  });
   
-
-
     window.electron.onAutoLoginSuccess(({ accessToken, userId }) => {
       console.log('Auto-login successful. Access token:', userId);
       // window.localStorage.setItem('userId', userId);
       // window.localStorage.setItem('accessToken', accessToken);
       
-      startDataUpdates(userId, accessToken)
-      
+      startUIUpdates(userId, accessToken)
+            
 
     });
   
@@ -307,9 +309,8 @@ async function fetchClipboardData() {
     }
 }
 
-async function startDataUpdates(userId, accessToken) {
+async function startUIUpdates(userId, accessToken) {
 
-  let intervalId;
   if (userId && accessToken) {
     authContainer.style.display = 'none'
       clipboardContainer.style.display = 'flex'
@@ -317,14 +318,7 @@ async function startDataUpdates(userId, accessToken) {
       resizeWindowButton.style.display = 'flex'
       icon.style.display = 'flex'
       
-    intervalId = setInterval(async () => {
-      fetchClipboardData();
-      window.electron.ipcRenderer.uploadClipboardData();
-    },1000)
-
-  } else {
-    clearInterval(intervalId)
-  }
+  } 
   
 }
 function copy(content, itemElement) {
@@ -333,7 +327,6 @@ function copy(content, itemElement) {
     navigator.clipboard.writeText(content)
       .then(() => {
         console.log('Text copied to clipboard');
-        showNotification();
      })
       .catch(err => {
         console.error('Failed to copy text: ', err);
