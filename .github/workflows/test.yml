@@ -29,17 +29,6 @@ jobs:
     - name: Install dependencies
       run: npm install
       
-    - name: Install Snapcraft
-      if: runner.os == 'Linux'
-      run: |
-        sudo apt update
-        sudo apt install -y snapd
-        sudo snap install snapcraft --classic
-
-    - name: Build Snap
-      if: runner.os == 'Linux'
-      run: snapcraft
-      
 
     - name: Generate Changelog
       run: npm run changelog
