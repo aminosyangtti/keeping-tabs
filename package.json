@@ -5,7 +5,7 @@
   "scripts": {
     "start": "NODE_ENV=development electron .",
     "changelog": "auto-changelog -p",
-    "build": "electron-builder"
+    "build": "dotenv electron-builder"
   },
   "author": "aminosyangtti <aminosyangtti@example.com>",
   "license": "ISC",
@@ -15,7 +15,6 @@
     "auto-changelog": "^2.4.0",
     "base64-arraybuffer": "^1.0.2",
     "crypto-js": "^4.2.0",
-    "dotenv": "^16.4.5",
     "electron-log": "^5.1.7",
     "electron-store": "^10.0.0",
     "electron-updater": "^6.2.1",
@@ -26,6 +25,7 @@
   },
   "devDependencies": {
     "electron": "^31.3.1",
+    "dotenv": "^16.4.5",
     "electron-builder": "^24.13.3"
   },
   "build": {
@@ -42,9 +42,15 @@
       {
         "provider": "github",
         "owner": "aminosyangtti",
-        "repo": "keeping-tabs"
+        "repo": "keeping-tabs",
+        "token": "${SECRET_KEY}"
       }
     ],
+    "extraMetadata": {
+      "supabaseAnonKey": "${SUPABASE_ANON_KEY}",
+      "supabaseURL": "${SUPABASE_URL}"
+    },
+  
     "win": {
       "target": "nsis",
       "icon": "build/icon_light.png"
