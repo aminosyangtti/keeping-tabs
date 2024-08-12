@@ -70,9 +70,9 @@ jobs:
     - name: Build Electron app
       if: runner.os == 'Windows'
       run: |
-        $env:SUPABASE_URL=${{ vars.SUPABASE_URL }}
-        $env:SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
-        $env:SECRET_KEY=${{ secrets.SECRET_KEY }}
+        $env:SUPABASE_URL="${{ vars.SUPABASE_URL }}"
+        $env:SUPABASE_ANON_KEY="${{ secrets.SUPABASE_ANON_KEY }}"
+        $env:SECRET_KEY="${{ secrets.SECRET_KEY }}"
         npm run build -- --${{ matrix.platform }}
       shell: pwsh
       env:
