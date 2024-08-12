@@ -17,20 +17,20 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v1
-      
+
     - name: Get Latest Tag
       id: get_tag
+      run: |
+        tagName=$(git describe --tags --abbrev=0)
+        echo "TAG_NAME=$tagName" >> $GITHUB_ENV
+      
+    - name: Get Latest Tag
       shell: pwsh
       if: runner.os == 'Windows'
       run: |
         $tagName = git describe --tags --abbrev=0
         Write-Output "TAG_NAME=$tagName" >> $env:GITHUB_ENV
-    - name: Get Latest Tag
-      shell: bash
-      if: runner.os == 'Windows'
-      run: |
-        tagName=$(git describe --tags --abbrev=0)
-        echo "TAG_NAME=$tagName" >> $GITHUB_ENV
+
 
     - name: Set up Node.js
       uses: actions/setup-node@v1
