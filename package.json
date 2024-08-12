@@ -4,7 +4,8 @@
   "main": "main.js",
   "scripts": {
     "start": "NODE_ENV=development electron .",
-    "changelog": "auto-changelog -p"
+    "changelog": "auto-changelog -p",
+    "build": "electron-builder"
   },
   "author": "aminosyangtti <aminosyangtti@example.com>",
   "license": "ISC",
