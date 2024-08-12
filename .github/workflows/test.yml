@@ -17,6 +17,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v1
+    - name: Get Latest Tag
+      id: get_tag
+      run: echo "TAG_NAME=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
 
     - name: Set up Node.js
       uses: actions/setup-node@v1
@@ -67,8 +70,8 @@ jobs:
         SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
       with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
+        tag_name: ${{ env.TAG_NAME }}
+        release_name: Release ${{ env.TAG_NAME }}
         body_path: ./CHANGELOG.md
         draft: false
         prerelease: false
