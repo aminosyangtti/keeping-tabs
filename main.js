@@ -49,8 +49,8 @@ function createWindow() {
     x: screenWidth - (screenWidth * 0.15),
     y: 0,
     frame: false,
-    resizable: true,
-    alwaysOnTop: true,
+    resizable: false,
+    alwaysOnTop: false,
     transparent: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -138,6 +138,7 @@ ipcMain.handle('sign-out', async () => {
         const { error } = await supabase.auth.signOut();
         if (error) throw error;
         console.log('User signed out successfully');
+        userId = ''
         win.reload();
     } catch (error) {
         console.error('Error signing out:', error.message);
@@ -158,38 +159,12 @@ ipcMain.handle('reset-password', async (event, { email }) => {
 
 ipcMain.handle('upload-clipboard-data', async() => {
     // handleClipboardImage()
-    const currentClipboardContent = clipboard.readText();
-  
-    if (currentClipboardContent && currentClipboardContent !== lastClipboardContent) {
-      lastClipboardContent = currentClipboardContent;
-      if (isPassword(currentClipboardContent)) {
-    
-        const result = await dialog.showMessageBox({
-          type: 'error',
-          buttons: ['Yes', 'No'],
-          title: 'Possible Password Detected',
-          message: 'The copied text appears to be a password. Do you want to save it?',
-        })
-          if (result.response === 0) { 
-            dialog.showMessageBox({
-              type: 'info',
-              title: 'Saving...',
-              message: 'No worries! Your password will be encrypted before storing it.',
-            });
-            uploadData(currentClipboardContent)
-            } else {
-  
-            } 
-  
-          } else {
-            uploadData(currentClipboardContent)
-  
-  
-          }
-        
-      }
+    checkClipboardChange()
+   
   
 })
+
+
   
 ipcMain.on('minimize-window', () => {
   win.minimize();
@@ -294,6 +269,8 @@ ipcMain.on('delete-item', async (event, itemId) => {
   
         if (deleteError) throw deleteError;
         console.log(`Item ${itemId} deleted from database`);
+        win.webContents.send('update-data', '');
+
         }
       } catch (error) {
         console.error('Error deleting item:', error.message);
@@ -315,6 +292,8 @@ ipcMain.on('delete-broken-item', async (event, itemId) => {
   
         if (deleteError) throw deleteError;
         console.log(`Item ${itemId} deleted from database`);
+        win.webContents.send('update-data', '');
+
         } catch (error) {
         console.error('Error deleting item:', error.message);
       }
@@ -375,7 +354,9 @@ ipcMain.on('delete-old-items', async (event) => {
             .eq('user_id', userId);
         if (error) throw error;
         console.log('Old items deleted from database:', 'all');
-        } 
+        }
+        win.webContents.send('update-data', '');
+
         
       } catch (error) {
         console.error('Error deleting old items:', error.message);
@@ -405,7 +386,9 @@ app.on('ready', async () => {
   createWindow();
   const ElectronStore = (await import('electron-store')).default;
   store = new ElectronStore();
-  await autoLogin(); 
+  await autoLogin();
+  setInterval(checkClipboardChange, 1000); //
+
 
 });
 
@@ -417,7 +400,6 @@ app.on('activate', () => {
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
-
 
 
 async function autoLogin() {
@@ -451,7 +433,40 @@ async function autoLogin() {
   
 
   
+async function checkClipboardChange() {
+  const currentClipboardContent = clipboard.readText();
+  
+  if (currentClipboardContent && currentClipboardContent !== lastClipboardContent && userId) {
+    lastClipboardContent = currentClipboardContent;
+    if (isPassword(currentClipboardContent)) {
+  
+      const result = await dialog.showMessageBox({
+        type: 'error',
+        buttons: ['Yes', 'No'],
+        title: 'Possible Password Detected',
+        message: 'The copied text appears to be a password. Do you want to save it?',
+      })
+        if (result.response === 0) { 
+          dialog.showMessageBox({
+            type: 'info',
+            title: 'Saving...',
+            message: 'No worries! Your password will be encrypted before storing it.',
+          });
+          uploadData(currentClipboardContent)
+          } else {
 
+          } 
+
+        } else {
+          uploadData(currentClipboardContent)
+
+
+
+        }
+      
+    }
+  
+}
   
 async function uploadData(currentClipboardContent) {
     const encryptedData = CryptoJS.AES.encrypt(currentClipboardContent, SECRET_KEY).toString();
@@ -467,10 +482,14 @@ async function uploadData(currentClipboardContent) {
   
          lastClipboardTextId = data[0].id;
          deleteMatchingItems(lastClipboardTextId)
+         win.webContents.send('update-data', '');
+
+
   
   
       if (error) throw error;
       console.log('Clipboard content added:', encryptedData);
+
     } catch (error) {
       console.error('Error adding clipboard content:', error.message);
     }
@@ -558,6 +577,9 @@ async function deleteMatchingItems(lastClipboardTextId) {
         if (deleteError) throw deleteError;
   
         console.log('Deleted matching items:', itemIds);
+        win.webContents.send('update-data', '');
+
+        
       } else {
         console.log('No matching items found.');
       }
