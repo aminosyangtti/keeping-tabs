@@ -26,11 +26,6 @@ jobs:
     - name: Install dependencies
       run: npm install
       
-    - name: Download libssl1.1
-      run: wget http://nz2.archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.22_amd64.deb
-
-    - name: Install libssl1.1
-      run: sudo dpkg -i libssl1.1_1.1.1f-1ubuntu2.22_amd64.deb
 
     - name: Generate Changelog
       run: npm run changelog
