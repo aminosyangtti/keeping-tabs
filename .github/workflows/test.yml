@@ -27,14 +27,14 @@ jobs:
       run: npm install
       
     - name: Install Snapcraft
-      if: matrix.platform == 'ubuntu-latest'
+      if: matrix.platform == 'linux'
       run: |
         sudo apt update
         sudo apt install -y snapd
         sudo snap install snapcraft
 
     - name: Build Snap
-      if: matrix.platform == 'ubuntu-latest'
+      if: matrix.platform == 'linux'
       run: snapcraft
       
 
@@ -42,7 +42,7 @@ jobs:
       run: npm run changelog
 
     - name: Install Wine (required for Windows builds)
-      if: matrix.platform == 'windows-latest'
+      if: matrix.platform == 'win32'
       run: |
         sudo dpkg --add-architecture i386
         sudo apt update
