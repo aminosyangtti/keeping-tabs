@@ -92,7 +92,5 @@ jobs:
         draft: true
         prerelease: false
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SUPABASE_URL: ${{ vars.SUPABASE_URL }}
-        SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-        SECRET_KEY: ${{ secrets.SECRET_KEY }}
+
 
