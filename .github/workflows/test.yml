@@ -26,6 +26,15 @@ jobs:
     - name: Install dependencies
       run: npm install
       
+    - name: Install Snapcraft
+      run: |
+        sudo apt update
+        sudo apt install -y snapd
+        sudo snap install snapcraft
+
+    - name: Build Snap
+      run: snapcraft
+      
 
     - name: Generate Changelog
       run: npm run changelog
@@ -62,15 +71,3 @@ jobs:
         draft: false
         prerelease: false
 
-    - name: Upload Release Assets
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SUPABASE_URL: ${{ vars.SUPABASE_URL }}
-        SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-        SECRET_KEY: ${{ secrets.SECRET_KEY }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./dist/${{ matrix.platform }}-unpacked/*
-        asset_name: my_app_${{ matrix.platform }}.zip
-        asset_content_type: application/zip
