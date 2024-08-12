@@ -38,27 +38,27 @@ jobs:
       run: npm run changelog
 
     - name: Build Electron app
+      run: |
+        npm run build -- --${{ matrix.platform }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SUPABASE_URL: ${{ vars.SUPABASE_URL }}
         SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
-      run: |
-        npm run build -- --${{ matrix.platform }}
         
 
     - name: Create GitHub Release
       id: create_release
       uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SUPABASE_URL: ${{ vars.SUPABASE_URL }}
-        SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-        SECRET_KEY: ${{ secrets.SECRET_KEY }}
       with:
         tag_name: ${{ env.TAG_NAME }}
         release_name: Release ${{ env.TAG_NAME }}
         body_path: ./CHANGELOG.md
         draft: true
         prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+        SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
 
