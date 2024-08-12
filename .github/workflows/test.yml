@@ -38,11 +38,43 @@ jobs:
       run: npm run changelog
 
     - name: Build Electron app
+      if: runner.os == 'Linux'
       run: |
         export SUPABASE_URL=${{ vars.SUPABASE_URL }}
         export SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
         export SECRET_KEY=${{ secrets.SECRET_KEY }}
         npm run build -- --${{ matrix.platform }}
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+        SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
+        
+    - name: Build Electron app
+      if: runner.os == 'macOS'
+      run: |
+        export SUPABASE_URL=${{ vars.SUPABASE_URL }}
+        export SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
+        export SECRET_KEY=${{ secrets.SECRET_KEY }}
+        npm run build -- --${{ matrix.platform }}
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+        SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
+
+      
+
+    - name: Build Electron app
+      if: runner.os == 'Windows'
+      run: |
+        $env:SUPABASE_URL=${{ vars.SUPABASE_URL }}
+        $env:SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
+        $env:SECRET_KEY=${{ secrets.SECRET_KEY }}
+        npm run build -- --${{ matrix.platform }}
+      shell: pwsh
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SUPABASE_URL: ${{ vars.SUPABASE_URL }}
