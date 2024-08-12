@@ -34,7 +34,7 @@ jobs:
       run: |
         sudo apt update
         sudo apt install -y snapd
-        sudo snap install snapcraft
+        sudo snap install snapcraft --classic
 
     - name: Build Snap
       if: runner.os == 'Linux'
@@ -43,13 +43,6 @@ jobs:
 
     - name: Generate Changelog
       run: npm run changelog
-
-    - name: Install Wine (required for Windows builds)
-      if: runner.os == 'Windows'
-      run: |
-        sudo dpkg --add-architecture i386
-        sudo apt update
-        sudo apt install -y wine64 wine32
 
     - name: Build Electron app
       env:
