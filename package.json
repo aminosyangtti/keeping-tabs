@@ -5,7 +5,7 @@
   "scripts": {
     "start": "NODE_ENV=development electron .",
     "changelog": "auto-changelog -p",
-    "build": "dotenv electron-builder"
+    "build": "electron-builder"
   },
   "author": "aminosyangtti <aminosyangtti@example.com>",
   "license": "ISC",
@@ -16,6 +16,7 @@
     "base64-arraybuffer": "^1.0.2",
     "crypto-js": "^4.2.0",
     "electron-log": "^5.1.7",
+    "dotenv": "^16.4.5",
     "electron-store": "^10.0.0",
     "electron-updater": "^6.2.1",
     "fs": "^0.0.1-security",
@@ -25,7 +26,6 @@
   },
   "devDependencies": {
     "electron": "^31.3.1",
-    "dotenv": "^16.4.5",
     "electron-builder": "^24.13.3"
   },
   "build": {
