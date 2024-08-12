@@ -20,12 +20,12 @@ jobs:
     - name: Get Latest Tag
       id: get_tag
       run: |
-          if [[ $RUNNER_OS == 'Windows' ]]; then
-            pwsh -Command '$tagName = git describe --tags --abbrev=0; Write-Output "TAG_NAME=$tagName" >> $env:GITHUB_ENV'
-          else
-            tagName=$(git describe --tags --abbrev=0)
-            echo "TAG_NAME=$tagName" >> $GITHUB_ENV
-            shell: bash
+        if [[ $RUNNER_OS == 'Windows' ]]; then 
+          pwsh -Command '$tagName = git describe --tags --abbrev=0; Write-Output "TAG_NAME=$tagName" >> $env:GITHUB_ENV'
+        else
+          tagName=$(git describe --tags --abbrev=0)
+          echo "TAG_NAME=$tagName" >> $GITHUB_ENV
+      shell: bash
 
     - name: Set up Node.js
       uses: actions/setup-node@v1
