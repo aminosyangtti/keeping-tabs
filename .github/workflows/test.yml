@@ -41,7 +41,7 @@ jobs:
       run: |
         export SUPABASE_URL=${{ vars.SUPABASE_URL }}
         export SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
-        export SECRET_KEY=${{ secrets.SECRET_KEY }
+        export SECRET_KEY=${{ secrets.SECRET_KEY }}
         npm run build -- --${{ matrix.platform }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
