@@ -31,12 +31,13 @@ jobs:
         run: echo "SUPABASE_URL value is ${{ vars.SUPABASE_URL }} and my secrets are ${{ secrets.SUPABASE_ANON_KEY }} and ${{ secrets.SECRET_KEY }}"
 
       - name: Build/Release Electron app
-        uses: samuelmeuli/action-electron-builder@v1.6.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+        env: 
           SUPABASE_URL: ${{ vars.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
+        uses: samuelmeuli/action-electron-builder@v1.6.0 
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           release: ${{ startsWith(github.ref, 'refs/tags/v') }}
           
         
