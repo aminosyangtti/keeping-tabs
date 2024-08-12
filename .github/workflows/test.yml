@@ -1,0 +1,81 @@
+name: Release
+
+on: push
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    env:
+      SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+      SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v1
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: '16'
+
+    - name: Install dependencies
+      run: npm install
+      
+    - name: Download libssl1.1
+      run: wget http://nz2.archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.22_amd64.deb
+
+    - name: Install libssl1.1
+      run: sudo dpkg -i libssl1.1_1.1.1f-1ubuntu2.22_amd64.deb
+
+    - name: Generate Changelog
+      run: npm run changelog
+
+    - name: Install Wine (required for Windows builds)
+      if: matrix.platform == 'win32'
+      run: |
+        sudo dpkg --add-architecture i386
+        sudo apt update
+        sudo apt install -y wine64 wine32
+
+    - name: Build Electron app
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+        SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      run: |
+        npm run build -- --${{ matrix.platform }}
+        
+
+    - name: Create GitHub Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+        SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        body_path: ./CHANGELOG.md
+        draft: false
+        prerelease: false
+
+    - name: Upload Release Assets
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+        SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./dist/${{ matrix.platform }}-unpacked/*
+        asset_name: my_app_${{ matrix.platform }}.zip
+        asset_content_type: application/zip
