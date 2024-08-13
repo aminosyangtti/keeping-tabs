@@ -52,13 +52,13 @@
 
  ### For Windows:
   > download: 
-   - [.exe](https://github.com/aminosyangtti/keeping-tabs/releases/download/v1.0.1/keeping-tabs-Setup-1.0.1.exe)
+   - [.exe](https://github.com/aminosyangtti/keeping-tabs/releases/download/v1.0.2/Keeping-Tabs-Setup-1.0.2.exe)
     
  ### For Linux:
   
   > download: 
-  - [.deb](https://github.com/aminosyangtti/keeping-tabs/releases/download/v1.0.1/keeping-tabs_1.0.1_amd64.deb)
-  - [.AppImage](https://github.com/aminosyangtti/keeping-tabs/releases/download/v1.0.1/keeping-tabs-1.0.1.AppImage)
+  - [.deb](https://github.com/aminosyangtti/keeping-tabs/releases/download/v1.0.2/keeping-tabs_1.0.2_amd64.deb)
+  - [.AppImage](https://github.com/aminosyangtti/keeping-tabs/releases/download/v1.0.2/Keeping-Tabs-1.0.2.AppImage)
     
   > or:
     <a href="https://snapcraft.io/keeping-tabs">
