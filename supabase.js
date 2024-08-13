@@ -1,3 +1,8 @@
+require('dotenv').config({
+    path: app.isPackaged
+        ? path.join(process.resourcesPath, '.env')
+        : path.resolve(process.cwd(), '.env'),
+})
 const { createClient } = require('@supabase/supabase-js');
 
 
