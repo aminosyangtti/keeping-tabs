@@ -13,8 +13,6 @@
     "@supabase/supabase-js": "^2.44.4",
     "auto-changelog": "^2.4.0",
     "base64-arraybuffer": "^1.0.2",
-    "crypto-js": "^4.2.0",
-    "dotenv": "^16.4.5",
     "electron-log": "^5.1.7",
     "electron-store": "^10.0.0",
     "electron-updater": "^6.2.1",

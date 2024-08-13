@@ -264,11 +264,7 @@ async function fetchClipboardData() {
           const itemElement = document.createElement('div');
         itemElement.className = 'clipboard-item';
         let contentHTML = '';
-          if (isValidURL(item.content)) {
-            displayPreview(item.content, item.id, itemElement)
-            copy(item.content, itemElement)
-  
-          } 
+         
           if(isHexCode(item.content)) {
               contentHTML = `<div style="margin: 0; padding: 0; display:flex; justify-content: center; align-items: center; height: 100%; width: 100%; background-color: ${item.content};">${item.content}</div>`;
               copy(item.content, itemElement)
@@ -336,38 +332,6 @@ function copy(content, itemElement) {
   });
 }
 
-async function displayPreview(url, itemId, itemElement) {
-
-  try {
-  let metadata = await window.electron.ipcRenderer.fetchMetadata(url);
-
-  if (metadata) {
-  const title = metadata.ogTitle || metadata.title || 'No Title';
-  // const description = metadata.ogDescription || metadata.description || 'No Description';
-  const imageUrl = metadata.ogImage[0].url|| 'default_image.png'; 
-
-  itemElement.innerHTML = `
-   <div class="clipboard-content" style="padding: 10px">
-      <img src="${imageUrl}" alt="Preview Image" />
-      <p>${title}</p>
-      <a href="${url}" target="_blank">Open Link</a>
-    </div>
-  `;
-  } else {
-    window.electron.ipcRenderer.deleteBrokenItem(itemId);
-
-    // `
-    // <div class="clipboard-content" style="padding: 10px">
-    //    <img src="${url}" alt="Clipboard Image" style="max-width: 300px;"/>
-    //     <p><strong>Image URL:</strong> ${url}</p>
-        
-    // `;
-    }
-  } catch (error) {
-    console.error(error)
-    } 
-}
-
 
 
 function showNotification() {
@@ -425,11 +389,3 @@ function isHexCode(str) {
   return result;
 }
 
-function isValidURL(str) {
-  const urlRegex = /^(https?:\/\/)?((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|\d{1,3}(\.\d{1,3}){3})(:\d+)?(\/[-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=-]*)?(#[-a-z\d_]*)?$/i;
-  return urlRegex.test(str);
-}
-
-
-
- 
