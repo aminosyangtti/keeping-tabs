@@ -19,13 +19,12 @@ jobs:
       - name: Install Node.js, NPM and Yarn
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Install dependencies
         run: npm install
-
-      - name: Generate Changelog
-        run: npm run changelog
+      - name: Install dependencies
+        run: npm audit fix
 
       - name: Build/Release Electron app
         uses: samuelmeuli/action-electron-builder@v1.6.0
