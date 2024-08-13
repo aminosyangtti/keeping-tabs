@@ -41,7 +41,7 @@ jobs:
 
     - name: Build Electron app
       run: |
-        npm run build -- --${{ matrix.platform }}
+        npm run build -- --${{ matrix.platform }} --publish-always
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
