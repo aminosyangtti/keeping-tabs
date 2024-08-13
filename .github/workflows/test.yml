@@ -5,14 +5,10 @@ on: push
 jobs:
   build:
     runs-on: ${{ matrix.os }}
-    env:
-      SUPABASE_URL: ${{ vars.SUPABASE_URL }}
-      SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-      SECRET_KEY: ${{ secrets.SECRET_KEY }}
 
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
 
     steps:
     - name: Checkout code
@@ -32,48 +28,23 @@ jobs:
 
     - name: Install dependencies
       run: npm install
+
+    - name: Create .env file
+      run: |
+        echo "SUPABASE_URL=${{ vars.SUPABASE_URL }}" > .env
+        echo "SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> .env
+        echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
       
 
     - name: Generate Changelog
       run: npm run changelog
 
     - name: Build Electron app
-      if: runner.os == 'Linux'
       run: |
-        export SUPABASE_URL=${{ vars.SUPABASE_URL }}
-        export SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
-        export SECRET_KEY=${{ secrets.SECRET_KEY }}
         npm run build -- --${{ matrix.platform }}
-      shell: bash
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-        
-    - name: Build Electron app
-      if: runner.os == 'macOS'
-      run: |
-        export SUPABASE_URL=${{ vars.SUPABASE_URL }}
-        export SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
-        export SECRET_KEY=${{ secrets.SECRET_KEY }}
-        npm run build -- --${{ matrix.platform }}
-      shell: bash
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      
-
-    - name: Build Electron app
-      if: runner.os == 'Windows'
-      run: |
-        $env:SUPABASE_URL="${{ vars.SUPABASE_URL }}"
-        $env:SUPABASE_ANON_KEY="${{ secrets.SUPABASE_ANON_KEY }}"
-        $env:SECRET_KEY="${{ secrets.SECRET_KEY }}"
-        npm run build -- --${{ matrix.platform }}
-      shell: pwsh
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-        
 
     - name: Create GitHub Release
       id: create_release

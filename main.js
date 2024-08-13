@@ -1,10 +1,8 @@
 const { app, BrowserWindow, ipcMain, clipboard, screen, dialog} = require('electron');
 const path = require('path');
 const { autoUpdater } = require('electron-updater');
-// const { supabase } = require('./supabase');
-const { createClient } = require('@supabase/supabase-js');
-const dotenv = require('dotenv');
-dotenv.config();
+const { supabase, SECRET_KEY } = require('./supabase.js');
+
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const { promisify } = require('util');
@@ -14,6 +12,7 @@ const crypto = require('crypto');
 const CryptoJS = require('crypto-js')
 const ogs = require('open-graph-scraper');
 const log = require('electron-log');
+
 
 app.commandLine.appendSwitch('enable-transparent-visuals');
 app.commandLine.appendSwitch('disable-gpu');
@@ -27,11 +26,7 @@ let win;
 let userId;
 let lastClipboardContent = '';
 let lastImageHash = '';
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
-const SECRET_KEY = process.env.SECRET_KEY
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let screenWidth;
 let screenHeight;

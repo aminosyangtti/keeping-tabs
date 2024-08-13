@@ -15,8 +15,8 @@
     "auto-changelog": "^2.4.0",
     "base64-arraybuffer": "^1.0.2",
     "crypto-js": "^4.2.0",
-    "electron-log": "^5.1.7",
     "dotenv": "^16.4.5",
+    "electron-log": "^5.1.7",
     "electron-store": "^10.0.0",
     "electron-updater": "^6.2.1",
     "fs": "^0.0.1-security",
@@ -29,11 +29,14 @@
     "electron-builder": "^24.13.3"
   },
   "build": {
+    "extraResources": [
+      ".env"
+    ],
     "appId": "com.aminosyangtti.keeping-tabs",
     "nsis": {
-    "perMachine": true, 
-    "allowElevation": true
-  },
+      "perMachine": true,
+      "allowElevation": true
+    },
     "directories": {
       "output": "dist",
       "buildResources": "build"
@@ -42,24 +45,16 @@
       {
         "provider": "github",
         "owner": "aminosyangtti",
-        "repo": "keeping-tabs",
-        "token": "${SECRET_KEY}"
+        "repo": "keeping-tabs"
       }
     ],
-    "extraMetadata": {
-      "supabaseAnonKey": "${SUPABASE_ANON_KEY}",
-      "supabaseURL": "${SUPABASE_URL}"
-    },
-  
     "win": {
       "target": "nsis",
       "icon": "build/icon_light.png"
     },
     "linux": {
       "target": [
-        "AppImage",
-        "deb",
-        "snap"
+        "AppImage"
       ],
       "icon": "build/icon_light.png"
     },
