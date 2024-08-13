@@ -16,13 +16,20 @@
 ![image](https://github.com/user-attachments/assets/5b620ea2-3628-44d8-a03e-9a63d55e361c)
 ![image](https://github.com/user-attachments/assets/39026c14-65cb-4a2c-9d6e-66107a255785)
 
+## Updates
+#### [v1.0.2](https://github.com/aminosyangtti/keeping-tabs/compare/v1.0.1...v1.0.2)
 
+- v1.0.2 [`#1`](https://github.com/aminosyangtti/keeping-tabs/pull/1)
+- Add new method of encrypting content [`96829d5`](https://github.com/aminosyangtti/keeping-tabs/commit/96829d557758239b3f4ab874d9171224547f9c9b)
+- Add improvements on handling data and UI updates [`f905a7f`](https://github.com/aminosyangtti/keeping-tabs/commit/f905a7f7cc712401c14a4b32ff540dbb58b99ce7)
+- Remove link previews [`96829d5`](https://github.com/aminosyangtti/keeping-tabs/commit/96829d557758239b3f4ab874d9171224547f9c9b)
+  
 ## Features
 
 ### Current Features
 
 - Syncs clipboard across all Windows and Ubuntu desktop devices
-- Can handle texts, hex codes, and links
+- Can handle texts and hex codes
 - Content encryption
 
 ### Future Features
@@ -32,10 +39,7 @@
 - Filter content
   
 
-  
 
-
-    
 
 ## Known issues
 
