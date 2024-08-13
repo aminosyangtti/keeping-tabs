@@ -1,0 +1,48 @@
+name: keeping-tabs
+version: '1.0.2'
+summary: Keeping Tabs
+description: |
+  A clipboard management app that seamlessly synchronizes your clipboard content across all your devices.
+  
+  **Current Features**
+    * Syncs clipboard across all Windows and Ubuntu desktop devices
+    * Can handle texts, hex codes, and links
+    * Content encryption
+  
+  **Future Features**
+    * Android version
+    * Clipboard content search
+    * Filter content
+  
+  **Known issues**
+    * broken preview images for copied links
+    * handling copied images --excluded feature for now
+
+base: core20  
+
+confinement: strict  
+
+grade: stable 
+
+apps:
+  keeping-tabs:
+    command: desktop-launch $SNAP/keeping-tabs
+    desktop: share/applications/keeping-tabs.desktop
+    plugs:
+      - desktop
+      - desktop-legacy
+      - x11
+      - unity7
+
+parts:
+  keeping-tabs:
+    plugin: nodejs
+    node-engine: '16.x'
+    source: https://github.com/aminosyangtti/keeping-tabs
+    build: |
+      npm install
+      npm run build
+    stage:
+      - node_modules
+      - keeping-tabs
+
