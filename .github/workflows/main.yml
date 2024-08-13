@@ -33,7 +33,7 @@ jobs:
 
     - name: Build Electron app
       run: |
-        electron-builder --config.extraMetadata.env.SECRET_KEY=${{ secrets.SECRET_KEY }} \
+        npx electron-builder --config.extraMetadata.env.SECRET_KEY=${{ secrets.SECRET_KEY }} \
                          --config.extraMetadata.env.SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }} \
                          --config.extraMetadata.env.SUPABASE_URL=${{ vars.SUPABASE_URL }}
       env: 
