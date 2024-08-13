@@ -73,4 +73,4 @@ sudo snap install keeping-tabs
  ### For MacOS:
   
   > download: 
-  - [.dmg](https://github.com/aminosyangtti/keeping-tabs/releases/download/v1.0.1/Keeping-Tabs-1.0.1-arm64.dmg) (untested)
+  - [.dmg](https://github.com/aminosyangtti/keeping-tabs/releases/download/v1.0.2/Keeping-Tabs-1.0.2-arm64.dmg) (untested)
