@@ -27,6 +27,7 @@
   },
   "build": {
     "appId": "com.aminosyangtti.keeping-tabs",
+    "productName": "Keeping Tabs",
     "nsis": {
       "perMachine": true,
       "allowElevation": true
