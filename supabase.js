@@ -1,3 +1,6 @@
+const { app } = require('electron');
+const path = require('path');
+
 require('dotenv').config({
     path: app.isPackaged
         ? path.join(process.resourcesPath, '.env')
