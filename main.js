@@ -1,15 +1,13 @@
 const { app, BrowserWindow, ipcMain, clipboard, screen, dialog} = require('electron');
 const path = require('path');
 const { autoUpdater } = require('electron-updater');
-const { supabase, SECRET_KEY } = require('./supabase.js');
+const { supabase} = require('./supabase.js');
 
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const { promisify } = require('util');
 const { decode } = require('base64-arraybuffer');
-const pipeline = promisify(require('stream').pipeline);
 const crypto = require('crypto');
-const CryptoJS = require('crypto-js')
 const ogs = require('open-graph-scraper');
 const log = require('electron-log');
 
@@ -26,7 +24,6 @@ let win;
 let userId;
 let lastClipboardContent = '';
 let lastImageHash = '';
-
 
 let screenWidth;
 let screenHeight;
@@ -193,7 +190,7 @@ ipcMain.handle('fetch-clipboard-data', async () => {
    
     try {
       const { data, error } = await supabase
-        .from('clipboard')
+        .from('decrypted_clipboard')
         .select('*')
         .eq('user_id', userId)
         .not('content', 'is', null)
@@ -203,44 +200,12 @@ ipcMain.handle('fetch-clipboard-data', async () => {
       if (error) throw error;
       // console.log(data)
   
-      const decryptedData = data.map(row => {
-        try {
-          return {
-            id: row.id,
-            user_id: row.user_id,
-            content: decrypt(row.content)
-          };
-        } catch (decryptionError) {
-          console.error(`Error decrypting row with id ${row.id}:`, decryptionError.message);
-          return {
-            id: row.id,
-            user_id: row.user_id,
-            content: null, // or some indication of decryption failure
-          };
-        }
-      });
   
-      return decryptedData;
+      return data;
     } catch (error) {
       console.error('Error fetching clipboard data:', error.message);
       throw error;
     }
-});
-ipcMain.handle('fetch-metadata', async (event, url) => {
-  
-      const options = { url };
-      try {
-        const { error, result } = await ogs(options);
-        if (error) {
-          console.error('Error fetching metadata:', error);
-          return null;
-        }
-        console.log(result)
-        return result;
-      } catch (error) {
-        console.error('Error fetching metadata:', error.message);
-        return null;
-      }
 });
 
   
@@ -464,13 +429,12 @@ async function checkClipboardChange() {
 }
   
 async function uploadData(currentClipboardContent) {
-    const encryptedData = CryptoJS.AES.encrypt(currentClipboardContent, SECRET_KEY).toString();
           
     try {
       const { data, error } = await supabase
         .from('clipboard')
         .insert({ 
-          content: encryptedData,
+          content: currentClipboardContent,
           user_id: userId
          })
         .select();
@@ -483,7 +447,7 @@ async function uploadData(currentClipboardContent) {
   
   
       if (error) throw error;
-      console.log('Clipboard content added:', encryptedData);
+      console.log('Clipboard content added:', currentClipboardContent);
 
     } catch (error) {
       console.error('Error adding clipboard content:', error.message);
@@ -550,14 +514,14 @@ async function deleteMatchingItems(lastClipboardTextId) {
   
     try {
       let { data: items, error } = await supabase
-        .from('clipboard')
+        .from('decrypted_clipboard')
         .select('*')
         .eq('user_id', userId);
   
       if (error) throw error;
   
       const matchingItems = items
-        .filter(item => decrypt(item.content) === currentClipboardContent)
+        .filter(item => item.content === currentClipboardContent)
         .filter(item => item.id !== lastClipboardTextId);
   
       const itemIds = matchingItems.map(item => item.id);
@@ -617,15 +581,3 @@ function isPassword(text) {
       return passwordPatterns.some(pattern => pattern.test(text)) 
 
 }
-
-function decrypt(encryptedData) {
-      try {
-        const bytes = CryptoJS.AES.decrypt(encryptedData, SECRET_KEY);
-        const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
-        return decryptedData;
-      } catch (error) {
-        console.error('Error decrypting data:', error.message);
-        throw new Error('Decryption failed');
-      }
-} 
-  
