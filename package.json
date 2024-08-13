@@ -5,7 +5,8 @@
   "scripts": {
     "start": "NODE_ENV=development electron .",
     "changelog": "auto-changelog -p",
-    "build": "electron-builder"
+    "prepare-config": "node prepare-config.js",
+    "build": "npm run prepare-config && electron-builder" 
   },
   "author": "aminosyangtti <aminosyangtti@example.com>",
   "license": "ISC",
@@ -29,9 +30,6 @@
     "electron-builder": "^24.13.3"
   },
   "build": {
-    "extraResources": [
-      ".env"
-    ],
     "appId": "com.aminosyangtti.keeping-tabs",
     "nsis": {
       "perMachine": true,

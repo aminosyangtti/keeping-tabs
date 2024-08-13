@@ -1,47 +1,47 @@
+name: Release
 
-
-name: Build/Release
-
-on: 
-  push:
-    tags:
-      - 'v*'
+on: push
 
 jobs:
-  release:
+  build:
     runs-on: ${{ matrix.os }}
-    env:
-      SUPABASE_URL: ${{ vars.SUPABASE_URL }}
-      SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+    env: 
+        SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+        SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
 
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
 
     steps:
-      - name: Check out Git repository
-        uses: actions/checkout@v1
+    - name: Checkout code
+      uses: actions/checkout@v1
 
-      - name: Install Node.js, NPM and Yarn
-        uses: actions/setup-node@v1
-        with:
-          node-version: '20.16.0'
 
-      - name: Install dependencies
-        run: npm install
-      - name: Read secrets and variables
-        run: echo "SUPABASE_URL value is ${{ vars.SUPABASE_URL }} and my secrets are ${{ secrets.SUPABASE_ANON_KEY }} and ${{ secrets.SECRET_KEY }}"
 
-      - name: Build/Release Electron app
-        env: 
-          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-          SECRET_KEY: ${{ secrets.SECRET_KEY }}
-        uses: samuelmeuli/action-electron-builder@v1.6.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          release: ${{ startsWith(github.ref, 'refs/tags/v') }}
-          
-        
+    - name: Set up Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: '16'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Generate Changelog
+      run: npm run changelog
+
+    - name: Build/Release Electron app
+      uses: samuelmeuli/action-electron-builder@v1.6.0
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        release: true
+      env: 
+        SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+        SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
+
+
+    
+
 
