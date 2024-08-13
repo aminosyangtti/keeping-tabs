@@ -28,9 +28,9 @@
   "build": {
     "appId": "com.aminosyangtti.keeping-tabs",
     "nsis": {
-    "perMachine": true, 
-    "allowElevation": true
-  },
+      "perMachine": true,
+      "allowElevation": true
+    },
     "directories": {
       "output": "dist",
       "buildResources": "build"
