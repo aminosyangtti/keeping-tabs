@@ -175,11 +175,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     });
 
-    window.electron.onGlobalCopy(() => {
-      fetchClipboardData();
-      showNotification();
+    window.electron.onDataChanged((action) => {
 
-  });
+      if (action == 'delete') {
+        showDeleteNotification()
+      } else {
+        showNotification();
+
+      }
+      fetchClipboardData();
+      
+    });
+
   
     window.electron.onAutoLoginSuccess(({ accessToken, userId }) => {
       console.log('Auto-login successful. Access token:', userId);

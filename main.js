@@ -58,6 +58,7 @@ function createWindow() {
     win.webContents.openDevTools({mode:'undocked'});
     }
   }
+
   
 autoUpdater.checkForUpdatesAndNotify();
 autoUpdater.on('update-available', (info) => {
@@ -193,7 +194,6 @@ ipcMain.handle('fetch-clipboard-data', async () => {
         .from('decrypted_clipboard')
         .select('*')
         .eq('user_id', userId)
-        .not('content', 'is', null)
         .order('created_at', { ascending: false });
 
   
@@ -229,8 +229,7 @@ ipcMain.on('delete-item', async (event, itemId) => {
   
         if (deleteError) throw deleteError;
         console.log(`Item ${itemId} deleted from database`);
-        win.webContents.send('update-data', '');
-
+        updateData('delete');
         }
       } catch (error) {
         console.error('Error deleting item:', error.message);
@@ -252,7 +251,7 @@ ipcMain.on('delete-broken-item', async (event, itemId) => {
   
         if (deleteError) throw deleteError;
         console.log(`Item ${itemId} deleted from database`);
-        win.webContents.send('update-data', '');
+        updateData('delete');
 
         } catch (error) {
         console.error('Error deleting item:', error.message);
@@ -315,7 +314,7 @@ ipcMain.on('delete-old-items', async (event) => {
         if (error) throw error;
         console.log('Old items deleted from database:', 'all');
         }
-        win.webContents.send('update-data', '');
+        updateData('delete');
 
         
       } catch (error) {
@@ -438,10 +437,10 @@ async function uploadData(currentClipboardContent) {
           user_id: userId
          })
         .select();
+        // console.log(data)
   
          lastClipboardTextId = data[0].id;
          deleteMatchingItems(lastClipboardTextId)
-         win.webContents.send('update-data', '');
 
 
   
@@ -536,7 +535,7 @@ async function deleteMatchingItems(lastClipboardTextId) {
         if (deleteError) throw deleteError;
   
         console.log('Deleted matching items:', itemIds);
-        win.webContents.send('update-data', '');
+        updateData('upload');
 
         
       } else {
@@ -580,4 +579,8 @@ function isPassword(text) {
       ];
       return passwordPatterns.some(pattern => pattern.test(text)) 
 
+}
+
+function updateData(action) {
+  win.webContents.send('update-data', action);
 }
