@@ -15,7 +15,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         clipboardContainer.style.display ='flex'
         title.style.display = 'flex'
         windowControls.style.display = 'flex'
-        // document.body.style.backgroundColor = '#1c1c1c'
 
         
 
@@ -25,9 +24,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         clipboardContainer.style.display ='none'
         title.style.display = 'none'
         windowControls.style.display = 'none'
-
-        // document.body.style.backgroundColor = '#1c1c1c40'
-
         isWindowHidden = true
       }
 
@@ -73,8 +69,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     signOutButton.addEventListener('click', async () => {
       try {
           await window.electron.ipcRenderer.signOut();
-          window.localStorage.removeItem('userId');
-          window.localStorage.removeItem('accessToken');
+          window.electron.ipcRenderer.getUserId(null)
+
           startUIUpdates(null, null)
       } catch (error) {
           console.error('Error signing out:', error.message);
@@ -146,6 +142,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       alert('Registration successful! You can now log in.');
       registrationSection.style.display = 'none'
       startUIUpdates(response.session.user.id, response.session.access_token)
+      window.electron.ipcRenderer.getUserId(response.session.user.id)
+
+
 
 
     } catch (error) {
@@ -163,10 +162,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
       const response = await window.electron.ipcRenderer.loginUser(email, password);
       console.log('Logged in:', response);
-      // window.localStorage.setItem('accessToken', response.session.access_token);
-      // window.localStorage.setItem('userId', response.session.user.id);
-      
       startUIUpdates(response.session.user.id, response.session.access_token)
+      window.electron.ipcRenderer.getUserId(response.session.user.id)
 
      
     } catch (error) {
@@ -190,20 +187,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   
     window.electron.onAutoLoginSuccess(({ accessToken, userId }) => {
       console.log('Auto-login successful. Access token:', userId);
-      // window.localStorage.setItem('userId', userId);
-      // window.localStorage.setItem('accessToken', accessToken);
-      
+     
       startUIUpdates(userId, accessToken)
+      window.electron.ipcRenderer.getUserId(userId)
             
 
     });
   
     window.electron.onAuthStateChanged(({ accessToken, userId }) => {
       console.log('Auth state changed. New access token:', userId);
-      // window.localStorage.setItem('userId', userId);
-      // window.localStorage.setItem('accessToken', accessToken);
-      // startDataUpdates()
-      // title.style.display = 'flex'
 
     });
 
@@ -217,10 +209,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
 
-// const userId = window.localStorage.getItem('userId');
-// console.log(userId)
-// const accessToken = window.localStorage.getItem('accessToken');
-// console.log(accessToken)
 const registrationSection = document.getElementById('registration-section')
 const authContainer = document.getElementById('auth-container')
 const loginSection = document.getElementById('login-section')
@@ -343,40 +331,35 @@ function copy(content, itemElement) {
 
 function showNotification() {
   const notification = document.getElementById('notification');
-  // const notificationSound = document.getElementById('notificationSound');
-  // notification.style.display = 'block'
+ 
   notification.style.opacity = 1
-  // notificationSound.play();
   notification.style.backgroundColor = '#f8f8f8'
   notification.style.color = '#191827'
 
   notification.innerText = 'Copied to clipboard!'
 
   setTimeout(() => {
-    // notification.style.display = 'none'
     notification.style.opacity = 0
     notification.style.transform = 'translateY(0);'
   
 
-  }, 3000); // Show the notification for 2 seconds
+  }, 3000);
 }
 
 function showDeleteNotification() {
   const notification = document.getElementById('notification');
-  // const notificationSound = document.getElementById('notificationSound');
   notification.style.opacity = 1
   notification.style.backgroundColor = '#9f4c4c'
   notification.style.color = '#f8f8f8'
 
   notification.innerText = 'Item deleted.'
-  // notificationSound.play();
 
   setTimeout(() => {
     notification.style.opacity = 0
     notification.style.transform = 'translateY(0);'
   
 
-  }, 3000); // Show the notification for 2 seconds
+  }, 3000); 
 }
 
 

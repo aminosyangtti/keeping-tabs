@@ -233,7 +233,7 @@ class ClipboardManager {
 
   // Method to check if content is a password
   isPassword(text) {
-    const passwordPatterns = [/password/i]; // Add more patterns if needed
+    const passwordPatterns = [/password/i]; 
     return passwordPatterns.some(pattern => pattern.test(text));
   }
 
