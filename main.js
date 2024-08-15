@@ -98,6 +98,28 @@ autoUpdater.on('update-downloaded', (info) => {
 
 
 
+  ipcMain.handle('check-update', () => {
+    
+    autoUpdater.checkForUpdates()
+    autoUpdater.on('update-not-available', (info) => {
+      log.info('Update not available.');
+      return 'Your app is up-to-date!'
+  });
+    autoUpdater.on('update-available', (info) => {
+      log.info('Update available.');
+      return `An update is available! Version: ${info.version}`
+     
+    });
+    autoUpdater.on('error', (err) => {
+      return 'Error checking for updates'
+    });
+  })
+
+  ipcMain.handle('get-app-version', () => app.getVersion());
+
+
+
+
 //AUTH 
 
 

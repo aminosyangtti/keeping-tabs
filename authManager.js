@@ -9,8 +9,11 @@ class AuthManager {
 
   // Auto-login function
   async autoLogin(store, win) {
+    
     const authToken = store.get('authToken');
     const refreshToken = store.get('refreshToken');
+    const userId = store.get('userId')
+    
 
     if (authToken && refreshToken) {
       try {
@@ -19,13 +22,14 @@ class AuthManager {
 
         win.webContents.send('auto-login-success', {
           accessToken: authToken,
-          userId: data.user.id
+          userId: userId
         });
         console.log('User logged in automatically');
       } catch (error) {
         console.error('Automatic login failed:', error.message);
         store.delete('authToken');
         store.delete('refreshToken');
+        store.delete('userId');
       }
     } else {
       console.log('No stored tokens found');
@@ -37,6 +41,7 @@ class AuthManager {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
+      console
       return data;
     } catch (error) {
       console.error('Login error:', error.message);
@@ -93,6 +98,8 @@ class AuthManager {
       if (event === 'SIGNED_IN') {
         store.set('authToken', session.access_token);
         store.set('refreshToken', session.refresh_token);
+        store.set('userId', session.user.id);
+
         if (win) {
           win.webContents.send('auth-state-changed', {
             accessToken: session.access_token,
@@ -102,6 +109,7 @@ class AuthManager {
       } else if (event === 'SIGNED_OUT') {
         store.delete('authToken');
         store.delete('refreshToken');
+        store.delete('userId');
       }
     });
   }

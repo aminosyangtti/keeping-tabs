@@ -1,7 +1,5 @@
 
 
-
-
 document.addEventListener('DOMContentLoaded', async () => {
  
 
@@ -10,11 +8,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     resizeWindowButton.addEventListener('click', async () => {
       window.electron.ipcRenderer.resizeWindow()
       if (isWindowHidden) {
-        isWindowHidden = false
+        
         resizeWindowButton.style.transform = ""
         clipboardContainer.style.display ='flex'
         title.style.display = 'flex'
         windowControls.style.display = 'flex'
+        infoButton.style.display = 'flex'
+        isWindowHidden = false
+
 
         
 
@@ -24,6 +25,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         clipboardContainer.style.display ='none'
         title.style.display = 'none'
         windowControls.style.display = 'none'
+        infoButton.style.display = 'none'
+        infoSection.style.display = 'none'
+        
+
         isWindowHidden = true
       }
 
@@ -36,12 +41,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     closeButton.addEventListener('click', async () => {
       window.electron.ipcRenderer.closeWindow()
     });
-    infoButton.addEventListener('click', async () => {
-      document.getElementById('info').style.display = 'flex'
+    
 
-     setTimeout( () => {
-      document.getElementById('info').style.display = 'none'
-     }, 5000)
+    let isInfoHidden = true
+    infoButton.addEventListener('click', async () => {
+      if (isInfoHidden) {
+        const versionNumber = await window.electron.getVersion();
+        let updateStatus = await window.electron.checkUpdate()
+        updateStatus = updateStatus ? updateStatus : "status error"
+
+        document.getElementById('info').style.display = 'flex'
+        clipboardContainer.style.display = 'none'
+        infoSection.style.display = 'flex'
+        version.innerText = `Current version: v${versionNumber} \n Status: ${updateStatus}`
+
+        isInfoHidden = false
+
+      } else {
+        document.getElementById('info').style.display = 'none'
+        clipboardContainer.style.display = 'flex'
+        infoSection.style.display = 'none'
+        isInfoHidden = true
+      }
+      
     });
     let isMoreOptions = false
 
@@ -50,7 +72,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         deleteButton.style.display = 'flex'
         signOutButton.style.display = 'flex'
-        infoButton.style.display = 'flex'
         moreOptionsButton.style.backgroundColor = '#74747431'
 
         isMoreOptions = true
@@ -58,7 +79,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       } else {
           deleteButton.style.display = 'none'
       signOutButton.style.display = 'none'
-      infoButton.style.display = 'none'
       moreOptionsButton.style.backgroundColor = ''
 
       isMoreOptions = false
@@ -213,9 +233,10 @@ const registrationSection = document.getElementById('registration-section')
 const authContainer = document.getElementById('auth-container')
 const loginSection = document.getElementById('login-section')
 const resetPasswordSection = document.getElementById('reset-password-section') 
-
-
 const clipboardContainer = document.getElementById('clipboard-container')
+const infoSection = document.getElementById('info-section')
+
+
 const clipboardList = document.getElementById('clipboard-list') 
 const registrationPageButton = document.getElementById('registration-page-button')
 const loginPageButton = document.getElementById('login-page-button')
@@ -231,6 +252,7 @@ const signOutButton = document.getElementById('sign-out-button')
 const loginForm = document.getElementById('login-form')
 const title = document.getElementById('title')
 const icon = document.getElementById('icon')
+const version = document.getElementById('version')
 
 const titleBar = document.getElementById('title-bar')
 const windowControls = document.getElementById('window-controls')
@@ -297,6 +319,7 @@ async function fetchClipboardData() {
        
   } catch (error) {
     console.error('Error fetching clipboard data:', error.message);
+    alert('Error fetching clipboard data:', error.message)
     }
 }
 

@@ -27,6 +27,11 @@ class ClipboardManager {
       console.log('Clipboard content added:', currentClipboardContent);
     } catch (error) {
       console.error('Error adding clipboard content:', error.message);
+      dialog.showMessageBox({
+        type: 'error',
+        title: 'Error Adding to Clipboard:',
+        message: error.message
+      });
     }
   }
 
@@ -39,7 +44,7 @@ class ClipboardManager {
 
       if (this.isPassword(currentClipboardContent)) {
         const result = await dialog.showMessageBox({
-          type: 'error',
+          type: 'info',
           buttons: ['Yes', 'No'],
           title: 'Possible Password Detected',
           message: 'The copied text appears to be a password. Do you want to save it?',
