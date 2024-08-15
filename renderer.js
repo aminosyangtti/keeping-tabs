@@ -297,6 +297,7 @@ async function fetchClipboardData() {
        
   } catch (error) {
     console.error('Error fetching clipboard data:', error.message);
+    alert('Error fetching clipboard data:', error.message)
     }
 }
 
