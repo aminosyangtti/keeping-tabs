@@ -130,6 +130,7 @@ ipcMain.handle('register-user', async (event, { email, password }) => {
     return data
   } catch (error) {
     console.error(error.message)
+    throw error;
   }
 });
 
@@ -141,12 +142,17 @@ ipcMain.handle('login-user', async (event, { email, password }) => {
     return data
   } catch (error) {
     console.error(error.message)
+    throw error;
   }
 });
 
 
 ipcMain.handle('sign-out', async () => {
-  await authManager.signOut(win);
+  try {
+    await authManager.signOut(win);
+  } catch (error) {
+    throw error;
+  }
 
 });
 
@@ -157,6 +163,7 @@ ipcMain.handle('reset-password', async (event, { email }) => {
     return data
   } catch (error) {
     console.error(error.message)
+    throw error;
   }
 });
 
@@ -167,13 +174,20 @@ ipcMain.handle('reset-password', async (event, { email }) => {
 // CLIPBOARD
 
   
-ipcMain.handle('fetch-clipboard-data', async () => {
-  const substring = ''
+ipcMain.handle('fetch-clipboard-data', async (event, text) => {
+  
+  let substring = text ? text : ''
+
+  console.log(text)
   try {
-    const data = await clipboardManager.fetch(userId, substring)
+     const data = await clipboardManager.fetch(userId, substring, win)
+     
+     
   return data
+
   } catch (error) {
     console.error('Error fetching clipboard data:', error.message);
+    throw error;
 
   }
   

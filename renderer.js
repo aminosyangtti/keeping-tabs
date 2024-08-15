@@ -4,6 +4,18 @@ document.addEventListener('DOMContentLoaded', async () => {
  
 
   try {
+    
+
+    searchBar.addEventListener('input', async () => {
+      
+      if (searchBar.value) {
+        fetchClipboardData(searchBar.value)
+        console.log(searchBar.value)
+      } 
+ 
+
+    });
+
     let isWindowHidden = false
     resizeWindowButton.addEventListener('click', async () => {
       window.electron.ipcRenderer.resizeWindow()
@@ -184,6 +196,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       console.log('Logged in:', response);
       startUIUpdates(response.session.user.id, response.session.access_token)
       window.electron.ipcRenderer.getUserId(response.session.user.id)
+      fetchClipboardData('');
 
      
     } catch (error) {
@@ -200,7 +213,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         showNotification();
 
       }
-      fetchClipboardData();
+      fetchClipboardData('');
       
     });
 
@@ -210,6 +223,7 @@ document.addEventListener('DOMContentLoaded', async () => {
      
       startUIUpdates(userId, accessToken)
       window.electron.ipcRenderer.getUserId(userId)
+      fetchClipboardData('');
             
 
     });
@@ -261,16 +275,17 @@ const minimizeButton = document.getElementById('minimize-button')
 const closeButton = document.getElementById('close-button')
 
 
+const searchBar = document.getElementById('search-bar');
 
 
 
 
-async function fetchClipboardData() {
+async function fetchClipboardData(substring) {
   console.log('fetching...')
    
   try {
      
-    const data = await window.electron.ipcRenderer.fetchClipboardData();
+    const data = await window.electron.ipcRenderer.fetchClipboardData(substring);
   
     const clipboardList = document.getElementById('clipboard-list');
     clipboardList.innerHTML = ''; 
