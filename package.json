@@ -3,7 +3,7 @@
   "version": "1.0.3",
   "main": "main.js",
   "scripts": {
-    "start": "NODE_ENV=development electron .",
+    "start": "electron .",
     "changelog": "auto-changelog -p"
   },
   "author": "aminosyangtti <aminosyangtti@example.com>",

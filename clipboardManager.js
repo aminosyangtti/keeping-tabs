@@ -22,7 +22,10 @@ class ClipboardManager {
 
       this.lastClipboardTextId = data[0].id;
       await this.deleteMatchingItems(userId, win, this.lastClipboardTextId);
-      await this.updateData('upload', win)
+      if (this.lastClipboardContent) {
+        await this.updateData('upload', win)
+
+      }
 
       console.log('Clipboard content added:', currentClipboardContent);
     } catch (error) {
@@ -40,7 +43,7 @@ class ClipboardManager {
     const currentClipboardContent = clipboard.readText();
 
     if (currentClipboardContent && currentClipboardContent !== this.lastClipboardContent && userId) {
-      this.lastClipboardContent = currentClipboardContent;
+      
 
       if (this.isPassword(currentClipboardContent)) {
         const result = await dialog.showMessageBox({
@@ -61,6 +64,7 @@ class ClipboardManager {
       } else {
         await this.uploadData(userId, win, currentClipboardContent);
       }
+      this.lastClipboardContent = currentClipboardContent;
     }
   }
 

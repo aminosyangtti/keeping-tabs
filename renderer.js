@@ -196,6 +196,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       console.log('Logged in:', response);
       startUIUpdates(response.session.user.id, response.session.access_token)
       window.electron.ipcRenderer.getUserId(response.session.user.id)
+      fetchClipboardData('');
 
      
     } catch (error) {
@@ -222,6 +223,7 @@ document.addEventListener('DOMContentLoaded', async () => {
      
       startUIUpdates(userId, accessToken)
       window.electron.ipcRenderer.getUserId(userId)
+      fetchClipboardData('');
             
 
     });
