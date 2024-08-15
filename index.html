@@ -22,7 +22,12 @@
     </div>
     
   </div> 
-  <div style="display: flex; flex-direction: row; justify-content: flex-start; width: 100%;"> <svg id="resize-window-button" class="hover-button hidden" style="padding: 10px;" fill="#747474" width="25px" height="25px" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg" stroke="#747474"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M 13.8320 43.5625 C 14.4883 43.5625 14.9336 43.3516 15.4258 43.1172 L 41.7695 31.2813 C 43.1055 30.6484 44.1602 29.6172 44.1602 28.1172 C 44.1602 26.6406 43.1289 25.5625 41.7461 24.9532 L 15.4258 12.8359 C 14.9570 12.6016 14.5351 12.4375 13.9258 12.4375 C 12.7070 12.4375 11.8398 13.2813 11.8398 14.5235 C 11.8398 15.6016 12.4023 16.2110 13.3867 16.6797 L 38.6055 27.8125 L 38.6055 28.0703 L 13.3867 39.2969 C 12.4023 39.7656 11.8398 40.3750 11.8398 41.4531 C 11.8398 42.7422 12.6836 43.5625 13.8320 43.5625 Z"></path></g></svg>
+  <div style="display: flex; flex-direction: row; justify-content: space-between; width: 100%;">
+    <div style="display: flex; flex-direction: row; justify-content: flex-start; width: 100%;"> 
+    <svg id="resize-window-button" class="hover-button hidden" style="padding: 10px;" fill="#747474" width="25px" height="25px" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg" stroke="#747474"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M 13.8320 43.5625 C 14.4883 43.5625 14.9336 43.3516 15.4258 43.1172 L 41.7695 31.2813 C 43.1055 30.6484 44.1602 29.6172 44.1602 28.1172 C 44.1602 26.6406 43.1289 25.5625 41.7461 24.9532 L 15.4258 12.8359 C 14.9570 12.6016 14.5351 12.4375 13.9258 12.4375 C 12.7070 12.4375 11.8398 13.2813 11.8398 14.5235 C 11.8398 15.6016 12.4023 16.2110 13.3867 16.6797 L 38.6055 27.8125 L 38.6055 28.0703 L 13.3867 39.2969 C 12.4023 39.7656 11.8398 40.3750 11.8398 41.4531 C 11.8398 42.7422 12.6836 43.5625 13.8320 43.5625 Z"></path></g></svg>
+    </div>
+    <svg id="info-button" class="hover-button" style=" padding: 10px;" width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#747474"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g id="Warning / Info"> <path id="Vector" d="M12 11V16M12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21ZM12.0498 8V8.1L11.9502 8.1002V8H12.0498Z" stroke="#747474" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g> </g></svg>
+
   </div>
 
   <div id="notification" >Copied to clipboard!</div>
@@ -73,23 +78,40 @@
 
   <!-- Clipboard Display -->
   <div id="clipboard-container" class="hidden">
-    <div id="info" style="display: none; background-color: #74747421; flex-direction: row; font-size: small; padding: 5px; position:absolute; z-index: 0; top: 70px;">Left-click items to&nbsp;<div style="color: #73C991">copy</div>. Right-click to&nbsp;<div style="color: #9f4c4c">delete</div>.</div>
 
     <div id="menu-container">
       
       <div>
         <svg id="more-options-button" class="hover-button" style="padding-right: 10px; padding-left: 10px; border-radius: 5px" width="25px" height="25px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#747474" class="bi bi-three-dots" stroke="#747474"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"></path> </g></svg>
-
-        <svg id="info-button" class="hover-button" style="display: none; padding: 5px;" width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#747474"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g id="Warning / Info"> <path id="Vector" d="M12 11V16M12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21ZM12.0498 8V8.1L11.9502 8.1002V8H12.0498Z" stroke="#747474" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g> </g></svg>
         <svg id="sign-out-button" alt="sign out" class="hover-button" style="cursor: pointer; display: none; padding: 5px; padding-right: 0" width="25px" height="25px" viewBox="0 0 24 24" fill="rgb(116,116,116)" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M4 5.4A1.4 1.4 0 0 1 5.4 4h6.2A1.4 1.4 0 0 1 13 5.4V8a1 1 0 1 0 2 0V5.4A3.4 3.4 0 0 0 11.6 2H5.4A3.4 3.4 0 0 0 2 5.4v13.2A3.4 3.4 0 0 0 5.4 22h6.2a3.4 3.4 0 0 0 3.4-3.4V16a1 1 0 1 0-2 0v2.6a1.4 1.4 0 0 1-1.4 1.4H5.4A1.4 1.4 0 0 1 4 18.6V5.4Z" fill="rgb(116,116,116)"></path><path d="M17.293 8.293a1 1 0 0 1 1.414 0l3 3a1 1 0 0 1 0 1.414l-3 3a1 1 0 0 1-1.414-1.414L18.586 13H7a1 1 0 1 1 0-2h11.586l-1.293-1.293a1 1 0 0 1 0-1.414Z" fill="#rgb(116,116,116)"></path></g></svg>
         <svg id="delete-button" class="hover-button" style="display: none; padding: 5px;" width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M15.5 4L14.5 3H9.5L8.5 4H5V6H19V4H15.5ZM6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V7H6V19ZM16 9H8V19H16V9Z" fill=""></path> <path d="M10 13H14V15H10V13Z" fill=""></path> </g></svg>
-
       </div>
 
-      </div>
+    </div>
     <h3>Your Clipboard</h3>
-    
+
     <div id="clipboard-list"></div>
+  </div>
+  
+  <div id="info-section" class="hidden" style="flex-direction: column; align-items: center; font-size: small; justify-content: space-around;
+    height: 50%;">
+    <div style="display: flex; flex-direction: column; align-items: center;">
+      <span style="font-size: small; margin-bottom: 10px; color: #747474;">How to use:</span>
+      <div id="info" style="display: flex; flex-direction: column; font-size: small; text-align: justify;">
+        <div style="display: flex; flex-direction: row;">Left-click items to&nbsp; <div style="color: #73C991">copy</div>.</div>
+        <div style="display: flex; flex-direction: row;">Right-click to&nbsp;<div style="color: #9f4c4c">delete</div>.</div>
+      </div>
+    </div>
+    
+    <div style="display: flex; flex-direction: column; align-items: center;">
+    <span style="font-size: small; margin-bottom: 10px; color: #747474;">App Information:</span>
+    <div id="version" style="text-align: justify;">v0.0.0</div>
+  </div>
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <span style="font-size: small; margin-bottom: 10px; color: #747474;">Contact Us:</span>
+    <div id="version" style="text-align: justify;">Email: <a href="mailto:aminosyangtti73@gmail.com">aminosyangtti73@gmail.com</a></div>
+  </div>
+
   </div>
 
   <script src="renderer.js"></script>
