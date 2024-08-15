@@ -47,6 +47,8 @@ function createWindow() {
   });
 
   win.loadFile('index.html');
+  win.webContents.openDevTools({mode:'undocked'});
+
   if (process.env.NODE_ENV === 'development') {
     win.webContents.openDevTools({mode:'undocked'});
     }
@@ -67,7 +69,7 @@ autoUpdater.on('update-available', (info) => {
   dialog.showMessageBox({
     type: 'info',
     title: 'Update available',
-    message: 'A new update is available. Downloading now...',
+    message: `Version: ${info.version} is now available.`,
   });
 });
   
@@ -80,6 +82,7 @@ autoUpdater.on('update-downloaded', (info) => {
     buttons: ['Yes', 'Later']
   }).then((returnValue) => {
     if (returnValue.response === 0) autoUpdater.quitAndInstall();
+    
   });
 });
   
@@ -96,22 +99,42 @@ autoUpdater.on('update-downloaded', (info) => {
     dialog.showErrorBox('Update Error: ' + err);
   });
 
-
+  
 
   ipcMain.handle('check-update', () => {
     
     autoUpdater.checkForUpdates()
     autoUpdater.on('update-not-available', (info) => {
       log.info('Update not available.');
-      return 'Your app is up-to-date!'
+
+      win.webContents.send('update-status', 'Your app is up-to-date!');
   });
     autoUpdater.on('update-available', (info) => {
       log.info('Update available.');
-      return `An update is available! Version: ${info.version}`
+       
+      win.webContents.send('update-status', `An update is available!`);
+
      
     });
+
+    autoUpdater.on('update-downloaded', (info) => {
+      log.info('Update downloaded.');
+      win.webContents.send('update-status', `An update is available!`);
+
+      dialog.showMessageBox({
+        type: 'info',
+        title: 'Update ready',
+        message: `Version: ${info.version} is now avaialable! It will be installed on restart. Restart now?`,
+        buttons: ['Yes', 'Later']
+      }).then((returnValue) => {
+        if (returnValue.response === 0) autoUpdater.quitAndInstall();
+      });
+    });
+
     autoUpdater.on('error', (err) => {
-      return 'Error checking for updates'
+       
+      win.webContents.send('update-status', 'Error checking for updates');
+
     });
   })
 

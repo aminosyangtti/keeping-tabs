@@ -19,6 +19,8 @@ contextBridge.exposeInMainWorld('electron', {
   onAuthStateChanged: (callback) => ipcRenderer.on('auth-state-changed', (event, data) => callback(data)),
   onDataChanged: (callback) => ipcRenderer.on('update-data', (event, action) => callback(action)),
   checkUpdate: () => ipcRenderer.invoke('check-update'),
+  checkUpdateStatus: (callback) => ipcRenderer.on('update-status', (event, status) => callback(status)),
+
 
   getVersion: () => ipcRenderer.invoke('get-app-version')
 

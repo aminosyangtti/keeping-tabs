@@ -57,17 +57,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     let isInfoHidden = true
     infoButton.addEventListener('click', async () => {
+
       if (isInfoHidden) {
         const versionNumber = await window.electron.getVersion();
-        let updateStatus = await window.electron.checkUpdate()
-        updateStatus = updateStatus ? updateStatus : "status error"
-
+        await window.electron.checkUpdate()
+        window.electron.checkUpdateStatus((updateStatus) => {
+          updateStatus = updateStatus ? updateStatus : "status error"
+          version.innerText = `Current version: v${versionNumber} \n Status: ${updateStatus}`
+  
+        });
         document.getElementById('info').style.display = 'flex'
-        clipboardContainer.style.display = 'none'
-        infoSection.style.display = 'flex'
-        version.innerText = `Current version: v${versionNumber} \n Status: ${updateStatus}`
-
-        isInfoHidden = false
+          clipboardContainer.style.display = 'none'
+          infoSection.style.display = 'flex'
+          isInfoHidden = false
+        
 
       } else {
         document.getElementById('info').style.display = 'none'
