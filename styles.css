@@ -309,6 +309,21 @@ html, body {
         flex-direction: column;
         width: 100%;
        }
+       #search-bar {
+        width: 70%;
+        border: transparent;
+        padding: 10px;
+        background-color:#d3d3d3;
+        border-radius: 10px;
+    }
+    #search-bar:focus {
+      width: 70%;
+      border: transparent;
+      padding: 10px;
+      background-color:#1c1c1c;
+      border-radius: 10px;
+  }
+
 
  #registration-page-button {
     font-size: smaller;
@@ -433,6 +448,21 @@ html, body {
 
         
        }
+    #search-bar {
+      width: 70%;
+      border: transparent;
+      padding: 10px;
+      background-color: #272727;
+      border-radius: 10px;
+  }
+  #search-bar:focus {
+    width: 70%;
+      border: transparent;
+      padding: 10px;
+      background-color: #f8f8f8;
+      border-radius: 10px;
+}
+
 
 
  #registration-page-button {

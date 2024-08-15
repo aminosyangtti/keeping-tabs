@@ -92,7 +92,10 @@ class ClipboardManager {
         if (deleteError) throw deleteError;
 
         console.log('Deleted matching items:', itemIds);
-        await this.updateData('upload', win);
+        if (this.lastClipboardContent) {
+          await this.updateData('upload', win)
+  
+        }
       } else {
         console.log('No matching items found.');
       }

@@ -2,7 +2,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {
-    fetchClipboardData: () => ipcRenderer.invoke('fetch-clipboard-data'),
+    fetchClipboardData: (substring) => ipcRenderer.invoke('fetch-clipboard-data', substring),
     registerUser: (email, password) => ipcRenderer.invoke('register-user', { email, password }),
     loginUser: (email, password) => ipcRenderer.invoke('login-user', { email, password }),
     deleteItem: (itemId) => ipcRenderer.send('delete-item', itemId),
