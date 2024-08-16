@@ -14,20 +14,19 @@ jobs:
 
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v1
 
       - name: Install Node.js, NPM and Yarn
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v1
         with:
-          node-version: '20'
-
+          node-version: '20.13.1'
       - name: Install dependencies
         run: npm install
-      - name: Install dependencies
-        run: npm audit fix
+
+
 
       - name: Build/Release Electron app
-        uses: samuelmeuli/action-electron-builder@v1.6.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          release: ${{ startsWith(github.ref, 'refs/tags/v') }}
+        run: npx electron-builder --publish always
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
