@@ -314,14 +314,16 @@ html, body {
         border: transparent;
         padding: 10px;
         background-color:#d3d3d3;
-        border-radius: 10px;
+        border-radius: 24px;
+        
     }
     #search-bar:focus {
       width: 70%;
       border: transparent;
       padding: 10px;
-      background-color:#1c1c1c;
-      border-radius: 10px;
+      background-color:#f1f1f1;
+      border-radius: 24px;
+      outline: none;
   }
 
 
@@ -453,14 +455,16 @@ html, body {
       border: transparent;
       padding: 10px;
       background-color: #272727;
-      border-radius: 10px;
+      border-radius: 24px;
   }
   #search-bar:focus {
     width: 70%;
       border: transparent;
       padding: 10px;
       background-color: #f8f8f8;
-      border-radius: 10px;
+      border-radius: 24px;
+      outline: none;
+
 }
 
 
