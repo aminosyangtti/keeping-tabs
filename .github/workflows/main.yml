@@ -40,8 +40,6 @@ jobs:
             chmod +x ./node_modules/app-builder-bin/linux/x64/app-builder
 
 
-      - name: Audit Fix
-        run: npm audit fix --force
 
       - name: Build/Release Electron app
         uses: samuelmeuli/action-electron-builder@v1.6.0
