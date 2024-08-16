@@ -16,8 +16,15 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v4
 
-      - name: Install Node.js, NPM and Yarn
-        uses: actions/setup-node@v2
+      - name: Install Node.js, NPM, and Yarn (Ubuntu)
+        if: runner.os == 'Linux'
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+    
+      - name: Install Node.js, NPM, and Yarn (macOS and Windows)
+        if: runner.os != 'Linux'
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
 
