@@ -5,6 +5,17 @@ const { supabase } = require('./supabase.js');
 const ClipboardManager = require('./clipboardManager.js');
 const AuthManager = require('./authManager.js');
 const log = require('electron-log');
+const os = require('os');
+
+const electronVersion = process.versions.electron;
+const chromiumVersion = process.versions.chrome;
+const nodeVersion = process.versions.node;
+const v8Version = process.versions.v8;
+const osType = os.type();
+const osArch = os.arch();
+const osRelease = os.release();
+const appVersion = app.getVersion()
+
 
 
 
@@ -136,10 +147,24 @@ autoUpdater.on('update-downloaded', (info) => {
     });
   })
 
-  ipcMain.handle('get-app-version', () => app.getVersion());
+  ipcMain.handle('get-app-info', () => getAppInfo());
+    
+function getAppInfo() {
 
+  const appInfo = `
+Version: ${appVersion}
+Electron: ${electronVersion}
+ElectronBuildId: 9870757
+Chromium: ${chromiumVersion}
+Node.js: ${nodeVersion}
+V8: ${v8Version}
+OS: ${osType} ${osArch} ${osRelease}
+`
+return appInfo
+  
+}
 
-
+console.log(getAppInfo())
 
 //AUTH 
 

@@ -68,8 +68,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     infoButton.addEventListener('click', async () => {
 
       if (isInfoHidden) {
-        const versionNumber = await window.electron.getVersion();
-        version.innerText = `Current version: v${versionNumber}`
+        const appInfo = await window.electron.getAppInfo();
+        version.innerText = `${appInfo}`
         
         document.getElementById('info').style.display = 'flex'
           clipboardContainer.style.display = 'none'

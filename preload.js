@@ -22,6 +22,6 @@ contextBridge.exposeInMainWorld('electron', {
   checkUpdateStatus: (callback) => ipcRenderer.on('update-status', (event, status) => callback(status)),
 
 
-  getVersion: () => ipcRenderer.invoke('get-app-version')
+  getAppInfo: () => ipcRenderer.invoke('get-app-info')
 
 });
