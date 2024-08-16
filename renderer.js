@@ -56,16 +56,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     
 
     let isInfoHidden = true
+    checkUpdateButton.addEventListener('click', async () => {
+      checkUpdateButton.style.display = 'none'
+      statusText.style.display = 'flex'
+      await window.electron.checkUpdate()
+        window.electron.checkUpdateStatus((updateStatus) => {
+          updateStatus = updateStatus ? updateStatus : "status error"
+          statusText.innerText = `Status: ${updateStatus}`
+        });
+    });
     infoButton.addEventListener('click', async () => {
 
       if (isInfoHidden) {
         const versionNumber = await window.electron.getVersion();
-        await window.electron.checkUpdate()
-        window.electron.checkUpdateStatus((updateStatus) => {
-          updateStatus = updateStatus ? updateStatus : "status error"
-          version.innerText = `Current version: v${versionNumber} \n Status: ${updateStatus}`
-  
-        });
+        version.innerText = `Current version: v${versionNumber}`
+        
         document.getElementById('info').style.display = 'flex'
           clipboardContainer.style.display = 'none'
           infoSection.style.display = 'flex'
@@ -279,6 +284,9 @@ const closeButton = document.getElementById('close-button')
 
 
 const searchBar = document.getElementById('search-bar');
+const statusText = document.getElementById('update-status');
+const checkUpdateButton = document.getElementById('check-updates-button');
+
 
 
 

@@ -41,7 +41,7 @@ class AuthManager {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      console
+      
       return data;
     } catch (error) {
       console.error('Login error:', error.message);
