@@ -23,8 +23,7 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-      - name: Install dependencies
-        run: npm audit fix
+
 
       - name: Build/Release Electron app
         uses: samuelmeuli/action-electron-builder@v1.6.0
