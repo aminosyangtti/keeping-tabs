@@ -1,21 +1,33 @@
 
 
-
-
 document.addEventListener('DOMContentLoaded', async () => {
  
 
   try {
+    
+
+    searchBar.addEventListener('input', async () => {
+      
+      if (searchBar.value) {
+        fetchClipboardData(searchBar.value)
+        console.log(searchBar.value)
+      } 
+ 
+
+    });
+
     let isWindowHidden = false
     resizeWindowButton.addEventListener('click', async () => {
       window.electron.ipcRenderer.resizeWindow()
       if (isWindowHidden) {
-        isWindowHidden = false
+        
         resizeWindowButton.style.transform = ""
         clipboardContainer.style.display ='flex'
         title.style.display = 'flex'
         windowControls.style.display = 'flex'
-        // document.body.style.backgroundColor = '#1c1c1c'
+        infoButton.style.display = 'flex'
+        isWindowHidden = false
+
 
         
 
@@ -25,8 +37,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         clipboardContainer.style.display ='none'
         title.style.display = 'none'
         windowControls.style.display = 'none'
-
-        // document.body.style.backgroundColor = '#1c1c1c40'
+        infoButton.style.display = 'none'
+        infoSection.style.display = 'none'
+        
 
         isWindowHidden = true
       }
@@ -40,12 +53,37 @@ document.addEventListener('DOMContentLoaded', async () => {
     closeButton.addEventListener('click', async () => {
       window.electron.ipcRenderer.closeWindow()
     });
-    infoButton.addEventListener('click', async () => {
-      document.getElementById('info').style.display = 'flex'
+    
 
-     setTimeout( () => {
-      document.getElementById('info').style.display = 'none'
-     }, 5000)
+    let isInfoHidden = true
+    checkUpdateButton.addEventListener('click', async () => {
+      checkUpdateButton.style.display = 'none'
+      statusText.style.display = 'flex'
+      await window.electron.checkUpdate()
+        window.electron.checkUpdateStatus((updateStatus) => {
+          updateStatus = updateStatus ? updateStatus : "status error"
+          statusText.innerText = `Status: ${updateStatus}`
+        });
+    });
+    infoButton.addEventListener('click', async () => {
+
+      if (isInfoHidden) {
+        const appInfo = await window.electron.getAppInfo();
+        version.innerText = `${appInfo}`
+        
+        document.getElementById('info').style.display = 'flex'
+          clipboardContainer.style.display = 'none'
+          infoSection.style.display = 'flex'
+          isInfoHidden = false
+        
+
+      } else {
+        document.getElementById('info').style.display = 'none'
+        clipboardContainer.style.display = 'flex'
+        infoSection.style.display = 'none'
+        isInfoHidden = true
+      }
+      
     });
     let isMoreOptions = false
 
@@ -54,7 +92,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         deleteButton.style.display = 'flex'
         signOutButton.style.display = 'flex'
-        infoButton.style.display = 'flex'
         moreOptionsButton.style.backgroundColor = '#74747431'
 
         isMoreOptions = true
@@ -62,7 +99,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       } else {
           deleteButton.style.display = 'none'
       signOutButton.style.display = 'none'
-      infoButton.style.display = 'none'
       moreOptionsButton.style.backgroundColor = ''
 
       isMoreOptions = false
@@ -73,8 +109,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     signOutButton.addEventListener('click', async () => {
       try {
           await window.electron.ipcRenderer.signOut();
-          window.localStorage.removeItem('userId');
-          window.localStorage.removeItem('accessToken');
+          window.electron.ipcRenderer.getUserId(null)
+
           startUIUpdates(null, null)
       } catch (error) {
           console.error('Error signing out:', error.message);
@@ -146,6 +182,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       alert('Registration successful! You can now log in.');
       registrationSection.style.display = 'none'
       startUIUpdates(response.session.user.id, response.session.access_token)
+      window.electron.ipcRenderer.getUserId(response.session.user.id)
+
+
 
 
     } catch (error) {
@@ -163,10 +202,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
       const response = await window.electron.ipcRenderer.loginUser(email, password);
       console.log('Logged in:', response);
-      // window.localStorage.setItem('accessToken', response.session.access_token);
-      // window.localStorage.setItem('userId', response.session.user.id);
-      
       startUIUpdates(response.session.user.id, response.session.access_token)
+      window.electron.ipcRenderer.getUserId(response.session.user.id)
+      fetchClipboardData('');
 
      
     } catch (error) {
@@ -175,28 +213,31 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     });
 
-    window.electron.onGlobalCopy(() => {
-      fetchClipboardData();
-      showNotification();
+    window.electron.onDataChanged((action) => {
 
-  });
+      if (action == 'delete') {
+        showDeleteNotification()
+      } else {
+        showNotification();
+
+      }
+      fetchClipboardData('');
+      
+    });
+
   
     window.electron.onAutoLoginSuccess(({ accessToken, userId }) => {
       console.log('Auto-login successful. Access token:', userId);
-      // window.localStorage.setItem('userId', userId);
-      // window.localStorage.setItem('accessToken', accessToken);
-      
+     
       startUIUpdates(userId, accessToken)
+      window.electron.ipcRenderer.getUserId(userId)
+      fetchClipboardData('');
             
 
     });
   
     window.electron.onAuthStateChanged(({ accessToken, userId }) => {
       console.log('Auth state changed. New access token:', userId);
-      // window.localStorage.setItem('userId', userId);
-      // window.localStorage.setItem('accessToken', accessToken);
-      // startDataUpdates()
-      // title.style.display = 'flex'
 
     });
 
@@ -210,17 +251,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
 
-// const userId = window.localStorage.getItem('userId');
-// console.log(userId)
-// const accessToken = window.localStorage.getItem('accessToken');
-// console.log(accessToken)
 const registrationSection = document.getElementById('registration-section')
 const authContainer = document.getElementById('auth-container')
 const loginSection = document.getElementById('login-section')
 const resetPasswordSection = document.getElementById('reset-password-section') 
-
-
 const clipboardContainer = document.getElementById('clipboard-container')
+const infoSection = document.getElementById('info-section')
+
+
 const clipboardList = document.getElementById('clipboard-list') 
 const registrationPageButton = document.getElementById('registration-page-button')
 const loginPageButton = document.getElementById('login-page-button')
@@ -236,6 +274,7 @@ const signOutButton = document.getElementById('sign-out-button')
 const loginForm = document.getElementById('login-form')
 const title = document.getElementById('title')
 const icon = document.getElementById('icon')
+const version = document.getElementById('version')
 
 const titleBar = document.getElementById('title-bar')
 const windowControls = document.getElementById('window-controls')
@@ -244,16 +283,20 @@ const minimizeButton = document.getElementById('minimize-button')
 const closeButton = document.getElementById('close-button')
 
 
+const searchBar = document.getElementById('search-bar');
+const statusText = document.getElementById('update-status');
+const checkUpdateButton = document.getElementById('check-updates-button');
 
 
 
 
-async function fetchClipboardData() {
+
+async function fetchClipboardData(substring) {
   console.log('fetching...')
    
   try {
      
-    const data = await window.electron.ipcRenderer.fetchClipboardData();
+    const data = await window.electron.ipcRenderer.fetchClipboardData(substring);
   
     const clipboardList = document.getElementById('clipboard-list');
     clipboardList.innerHTML = ''; 
@@ -302,6 +345,7 @@ async function fetchClipboardData() {
        
   } catch (error) {
     console.error('Error fetching clipboard data:', error.message);
+    alert('Error fetching clipboard data:', error.message)
     }
 }
 
@@ -336,40 +380,35 @@ function copy(content, itemElement) {
 
 function showNotification() {
   const notification = document.getElementById('notification');
-  // const notificationSound = document.getElementById('notificationSound');
-  // notification.style.display = 'block'
+ 
   notification.style.opacity = 1
-  // notificationSound.play();
   notification.style.backgroundColor = '#f8f8f8'
   notification.style.color = '#191827'
 
   notification.innerText = 'Copied to clipboard!'
 
   setTimeout(() => {
-    // notification.style.display = 'none'
     notification.style.opacity = 0
     notification.style.transform = 'translateY(0);'
   
 
-  }, 3000); // Show the notification for 2 seconds
+  }, 3000);
 }
 
 function showDeleteNotification() {
   const notification = document.getElementById('notification');
-  // const notificationSound = document.getElementById('notificationSound');
   notification.style.opacity = 1
   notification.style.backgroundColor = '#9f4c4c'
   notification.style.color = '#f8f8f8'
 
   notification.innerText = 'Item deleted.'
-  // notificationSound.play();
 
   setTimeout(() => {
     notification.style.opacity = 0
     notification.style.transform = 'translateY(0);'
   
 
-  }, 3000); // Show the notification for 2 seconds
+  }, 3000); 
 }
 
 

@@ -10,7 +10,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [macos-latest, windows-latest]
 
     steps:
       - name: Check out Git repository
@@ -23,8 +23,7 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-      - name: Install dependencies
-        run: npm audit fix
+
 
       - name: Build/Release Electron app
         uses: samuelmeuli/action-electron-builder@v1.6.0

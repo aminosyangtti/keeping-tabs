@@ -2,12 +2,12 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {
-    fetchClipboardData: () => ipcRenderer.invoke('fetch-clipboard-data'),
+    fetchClipboardData: (substring) => ipcRenderer.invoke('fetch-clipboard-data', substring),
     registerUser: (email, password) => ipcRenderer.invoke('register-user', { email, password }),
     loginUser: (email, password) => ipcRenderer.invoke('login-user', { email, password }),
-    uploadClipboardData: () => ipcRenderer.invoke('upload-clipboard-data'),
     deleteItem: (itemId) => ipcRenderer.send('delete-item', itemId),
     deleteBrokenItem: (itemId) => ipcRenderer.send('delete-broken-item', itemId),
+    getUserId: (user) => ipcRenderer.send('get-user-id', user),
     deleteOldItems: () => ipcRenderer.send('delete-old-items'),
     signOut: () => ipcRenderer.invoke('sign-out'),
     resetPassword: (email) => ipcRenderer.invoke('reset-password', { email }),
@@ -17,6 +17,11 @@ contextBridge.exposeInMainWorld('electron', {
   },
   onAutoLoginSuccess: (callback) => ipcRenderer.on('auto-login-success', (event, data) => callback(data)),
   onAuthStateChanged: (callback) => ipcRenderer.on('auth-state-changed', (event, data) => callback(data)),
-  onGlobalCopy: (callback) => ipcRenderer.on('update-data', (event) => callback()),
+  onDataChanged: (callback) => ipcRenderer.on('update-data', (event, action) => callback(action)),
+  checkUpdate: () => ipcRenderer.invoke('check-update'),
+  checkUpdateStatus: (callback) => ipcRenderer.on('update-status', (event, status) => callback(status)),
+
+
+  getAppInfo: () => ipcRenderer.invoke('get-app-info')
 
 });
