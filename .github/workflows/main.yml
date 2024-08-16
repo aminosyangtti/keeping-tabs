@@ -29,8 +29,18 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
+        if: runner.os != 'Linux'
         run: npm install
+
       - name: Install dependencies
+        if: runner.os == 'Linux'
+        run: |
+            rm -rf node_modules
+            npm install
+            chmod +x ./node_modules/app-builder-bin/linux/x64/app-builder
+
+
+      - name: Audit Fix
         run: npm audit fix
 
       - name: Build/Release Electron app

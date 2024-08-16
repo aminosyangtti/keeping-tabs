@@ -18,7 +18,7 @@
   },
   "devDependencies": {
     "electron": "^31.3.1",
-    "electron-builder": "^24.13.3"
+    "electron-builder": "^23.6.0"
   },
   "build": {
     "appId": "com.aminosyangtti.keeping-tabs",
@@ -48,6 +48,7 @@
     "linux": {
       "target": [
         "AppImage",
+        "deb",
         "snap"
       ],
       "icon": "build/icon.png"
