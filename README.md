@@ -12,18 +12,19 @@
 ## Screenshots
 
 ![image](https://github.com/user-attachments/assets/054ee953-7c3f-49b5-b78b-6a564b140dfc)
-![Screenshot from 2024-08-06 21-08-03](https://github.com/user-attachments/assets/6a0e38a6-f49a-48e0-8b24-0f1851f22144)
+![Screenshot 2024-08-16 201336](https://github.com/user-attachments/assets/4ca071fc-1078-4cd4-8563-89a3c3447bf8)
+![Screenshot 2024-08-16 201745](https://github.com/user-attachments/assets/5a2a4f72-5ef3-47b2-a3a6-5c65ff329857)
+![Screenshot 2024-08-16 201451](https://github.com/user-attachments/assets/fe7edc39-8c6a-4366-8309-4222c7ffe5f6)
 ![image](https://github.com/user-attachments/assets/5b620ea2-3628-44d8-a03e-9a63d55e361c)
-![image](https://github.com/user-attachments/assets/39026c14-65cb-4a2c-9d6e-66107a255785)
 
-## Updates
-#### [v1.0.2](https://github.com/aminosyangtti/keeping-tabs/compare/v1.0.1...v1.0.2)
 
-- v1.0.2 [`#1`](https://github.com/aminosyangtti/keeping-tabs/pull/1)
-- Add new method of encrypting content [`96829d5`](https://github.com/aminosyangtti/keeping-tabs/commit/96829d557758239b3f4ab874d9171224547f9c9b)
-- Add improvements on handling data and UI updates [`f905a7f`](https://github.com/aminosyangtti/keeping-tabs/commit/f905a7f7cc712401c14a4b32ff540dbb58b99ce7)
-- Remove link previews [`96829d5`](https://github.com/aminosyangtti/keeping-tabs/commit/96829d557758239b3f4ab874d9171224547f9c9b)
-  
+## What's Changed
+* About Page by @aminosyangtti in https://github.com/aminosyangtti/keeping-tabs/pull/4
+* Search feature by @aminosyangtti in https://github.com/aminosyangtti/keeping-tabs/pull/5
+* Add New Encryption Method [96829d5](https://github.com/aminosyangtti/keeping-tabs/commit/96829d557758239b3f4ab874d9171224547f9c9b)
+
+**Full Changelog**: https://github.com/aminosyangtti/keeping-tabs/compare/v1.0.2...v1.0.3
+
 ## Features
 
 ### Current Features
@@ -31,19 +32,19 @@
 - Syncs clipboard across all Windows and Ubuntu desktop devices
 - Can handle texts and hex codes
 - Content encryption
-
+- Clipboard content search
+  
 ### Future Features
 
 - Android version
-- Clipboard content search
-- Filter content
+- Filter content by date
   
 
 
 
 ## Known issues
 
-   - broken preview images for copied links
+   - broken preview images for copied links (removed link previews as a feature for now)
    - handling copied images --excluded feature for now
 
     
@@ -52,7 +53,8 @@
 
  ### For Windows:
   > download: 
-   - [.exe](https://github.com/aminosyangtti/keeping-tabs/releases/download/v1.0.2/Keeping-Tabs-Setup-1.0.2.exe)
+   - [Setup](https://github.com/aminosyangtti/keeping-tabs/releases/download/v1.0.3/Keeping-Tabs-Setup-1.0.3.exe)
+   - [portable version](https://github.com/aminosyangtti/keeping-tabs/releases/download/v1.0.3/Keeping-Tabs-1.0.3.exe)
     
  ### For Linux:
   
@@ -73,4 +75,4 @@ sudo snap install keeping-tabs
  ### For MacOS:
   
   > download: 
-  - [.dmg](https://github.com/aminosyangtti/keeping-tabs/releases/download/v1.0.2/Keeping-Tabs-1.0.2-arm64.dmg) (untested)
+  - [.dmg](https://github.com/aminosyangtti/keeping-tabs/releases/download/v1.0.3/Keeping-Tabs-1.0.3-arm64.dmg) (untested)
