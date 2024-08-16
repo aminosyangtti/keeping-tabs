@@ -14,30 +14,14 @@ jobs:
 
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v1
 
-      - name: Install Node.js, NPM, and Yarn (Ubuntu)
-        if: runner.os == 'Linux'
-        uses: actions/setup-node@v4
+      - name: Install Node.js, NPM and Yarn
+        uses: actions/setup-node@v1
         with:
-          node-version: '20.13.1'
-    
-      - name: Install Node.js, NPM, and Yarn (macOS and Windows)
-        if: runner.os != 'Linux'
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
+          node-version: 16
       - name: Install dependencies
-        if: runner.os != 'Linux'
         run: npm install
-
-      - name: Install dependencies
-        if: runner.os == 'Linux'
-        run: |
-            rm -rf node_modules
-            npm install
-            chmod +x ./node_modules/app-builder-bin/linux/x64/app-builder
 
 
 
