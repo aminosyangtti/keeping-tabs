@@ -26,7 +26,7 @@ jobs:
 
 
       - name: Build/Release Electron app
-        run: npx electron-builder --publish always --log-level debug
+        run: npx electron-builder -- --linux --publish always
         env: 
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
