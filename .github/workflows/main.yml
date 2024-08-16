@@ -41,7 +41,7 @@ jobs:
 
 
       - name: Audit Fix
-        run: npm audit fix
+        run: npm audit fix --force
 
       - name: Build/Release Electron app
         uses: samuelmeuli/action-electron-builder@v1.6.0
