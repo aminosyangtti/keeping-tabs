@@ -44,14 +44,7 @@
         "nsis",
         "portable"
       ],
-      "icon": "build/icon.png",
-      "nsis": {
-        "oneClick": false,
-        "allowToChangeInstallationDirectory": true,
-        "createDesktopShortcut": true,
-        "createStartMenuShortcut": true
-      },
-      "autoLaunch": true
+      "icon": "build/icon.png"
     },
     "linux": {
       "target": [
@@ -68,18 +61,18 @@
     },
     "mac": {
       "category": "public.app-category.utilities",
+      "extendInfo": {
+        "LSUIElement": 1
+      },
+      "loginItemSettings": {
+        "enabled": true,
+        "hide": false
+      },
       "target": [
         "dmg",
         "zip"
       ],
-      "icon": "build/icon.png",
-      "extendInfo": {
-        "LSUIElement": 1
-      },
-      "loginItem": {
-        "enabled": true,
-        "hide": false
-      }
+      "icon": "build/icon.png"
     }
   }
 }
