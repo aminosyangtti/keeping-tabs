@@ -24,10 +24,6 @@
   "build": {
     "appId": "com.aminosyangtti.keeping-tabs",
     "productName": "Keeping Tabs",
-    "nsis": {
-      "perMachine": true,
-      "allowElevation": true
-    },
     "directories": {
       "output": "dist",
       "buildResources": "build"
@@ -63,10 +59,6 @@
       "category": "public.app-category.utilities",
       "extendInfo": {
         "LSUIElement": 1
-      },
-      "loginItemSettings": {
-        "enabled": true,
-        "hide": false
       },
       "target": [
         "dmg",
