@@ -178,7 +178,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   
     try {
       const response = await window.electron.ipcRenderer.registerUser(email, password);
-      console.log('Registration successful:', response);
       alert('Registration successful! You can now log in.');
       registrationSection.style.display = 'none'
       startUIUpdates(response.session.user.id, response.session.access_token)
@@ -201,7 +200,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   
     try {
       const response = await window.electron.ipcRenderer.loginUser(email, password);
-      console.log('Logged in:', response);
       startUIUpdates(response.session.user.id, response.session.access_token)
       window.electron.ipcRenderer.getUserId(response.session.user.id)
       fetchClipboardData('');
@@ -227,7 +225,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   
     window.electron.onAutoLoginSuccess(({ accessToken, userId }) => {
-      console.log('Auto-login successful. Access token:', userId);
      
       startUIUpdates(userId, accessToken)
       window.electron.ipcRenderer.getUserId(userId)
@@ -237,7 +234,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   
     window.electron.onAuthStateChanged(({ accessToken, userId }) => {
-      console.log('Auth state changed. New access token:', userId);
 
     });
 
@@ -331,7 +327,6 @@ async function fetchClipboardData(substring) {
             event.preventDefault();
             
             if (item.id) {
-              console.log(item.id)
               window.electron.ipcRenderer.deleteItem(item.id);
             }
           });

@@ -1,7 +1,7 @@
 BUGS TO FIX:
 
 
-1. Canceling delete action would still show notifications
+1. (FIXED) Canceling delete action would still show notifications
 	App Info:
 		version 1.0.3
 		OS: All platforms

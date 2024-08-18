@@ -237,8 +237,10 @@ class ClipboardManager {
         if (error) throw error;
         console.log('Old items deleted from database:', 'all');
       }
-
+      if (result.response !== 4) {
         await this.updateData('delete', win);
+      }
+
     } catch (error) {
       console.error('Error deleting old items:', error.message);
     }
