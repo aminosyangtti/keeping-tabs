@@ -271,9 +271,9 @@ if (process.platform === 'darwin') {
 } else if (process.platform === 'win32') {
     appPath = app.getPath('exe');
 }
-
+console.log(appPath)
 const appAutoLauncher = new AutoLaunch({
-    name: 'YourAppName',
+    name: 'Keeping Tabs',
     path: appPath
   });
 
