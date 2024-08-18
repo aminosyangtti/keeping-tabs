@@ -315,6 +315,7 @@ html, body {
         padding: 10px;
         background-color:#d3d3d3;
         border-radius: 24px;
+        color: #747474
         
     }
     #search-bar:focus {
@@ -456,6 +457,7 @@ html, body {
       padding: 10px;
       background-color: #272727;
       border-radius: 24px;
+      color: #747474
   }
   #search-bar:focus {
     width: 70%;
