@@ -261,6 +261,21 @@ ipcMain.on('delete-old-items', async (event) => {
 
 // APP
 
+const gotTheLock = app.requestSingleInstanceLock();
+
+if (!gotTheLock) {
+  app.quit();
+} else {
+  app.on('second-instance', (event, commandLine, workingDirectory) => {
+    // This event will be emitted when a second instance is attempted
+    if (win) {
+      // Focus the existing window if it's open
+      if (win.isMinimized()) win.restore();
+      win.focus();
+    }
+  });
+}
+
   
 ipcMain.on('minimize-window', () => {
   win.minimize();
