@@ -12,6 +12,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.44.4",
     "auto-changelog": "^2.4.0",
+    "auto-launch": "^5.0.6",
     "electron-log": "^5.1.7",
     "electron-store": "^10.0.0",
     "electron-updater": "^6.2.1"
@@ -43,22 +44,42 @@
         "nsis",
         "portable"
       ],
-      "icon": "build/icon.png"
+      "icon": "build/icon.png",
+      "nsis": {
+        "oneClick": false,
+        "allowToChangeInstallationDirectory": true,
+        "createDesktopShortcut": true,
+        "createStartMenuShortcut": true
+      },
+      "autoLaunch": true
     },
     "linux": {
       "target": [
         "AppImage",
         "deb",
-        "snap"
+        "snap",
+        "rpm"
       ],
-      "icon": "build/icon.png"
+      "icon": "build/icon.png",
+      "category": "Utility",
+      "desktop": {
+        "StartupWMClass": "Keeping Tabs"
+      }
     },
     "mac": {
+      "category": "public.app-category.utilities",
       "target": [
         "dmg",
         "zip"
       ],
-      "icon": "build/icon.png"
+      "icon": "build/icon.png",
+      "extendInfo": {
+        "LSUIElement": 1
+      },
+      "loginItem": {
+        "enabled": true,
+        "hide": false
+      }
     }
   }
 }
