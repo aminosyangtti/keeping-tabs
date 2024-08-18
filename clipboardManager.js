@@ -223,8 +223,10 @@ class ClipboardManager {
         const { data, error } = await supabase
           .from('clipboard')
           .delete()
+          .eq('user_id', userId)
           .gte('created_at', startOfToday.toISOString())
-          .lte('created_at', now.toISOString());
+
+
 
         if (error) throw error;
         console.log('Old items deleted from database:', 'from today');
