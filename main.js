@@ -1,11 +1,11 @@
 const { app, BrowserWindow, ipcMain, screen, dialog} = require('electron');
 const path = require('path');
 const { autoUpdater } = require('electron-updater');
-const { supabase } = require('./supabase.js');
 const ClipboardManager = require('./clipboardManager.js');
 const AuthManager = require('./authManager.js');
 const log = require('electron-log');
 const os = require('os');
+const AutoLaunch = require('auto-launch');
 
 const electronVersion = process.versions.electron;
 const chromiumVersion = process.versions.chrome;
@@ -59,7 +59,6 @@ function createWindow() {
 
   win.loadFile('index.html');
   if (process.env.NODE_ENV === 'development') {
-    win.webContents.openDevTools({mode:'undocked'});
     }
 }
 
@@ -260,6 +259,48 @@ ipcMain.on('delete-old-items', async (event) => {
 
 
 // APP
+
+
+
+let appPath = app.getPath('exe'); 
+
+if (process.platform === 'darwin') {
+    appPath = path.join(app.getAppPath(), '..', '..', '..', '..');
+} else if (process.platform === 'linux') {
+    appPath = '/usr/bin/env';
+} else if (process.platform === 'win32') {
+    appPath = app.getPath('exe');
+}
+console.log(appPath)
+const appAutoLauncher = new AutoLaunch({
+    name: 'Keeping Tabs',
+    path: appPath
+  });
+
+// Enable auto-launch
+appAutoLauncher.isEnabled().then((isEnabled) => {
+    if (!isEnabled) appAutoLauncher.enable();
+}).catch((err) => {
+    console.error('Failed to enable auto-launch:', err);
+});
+
+
+
+
+
+const gotTheLock = app.requestSingleInstanceLock();
+
+if (!gotTheLock) {
+  app.quit();
+} else {
+  app.on('second-instance', (event, commandLine, workingDirectory) => {
+    if (win) {
+      // Focus the existing window if it's open
+      if (win.isMinimized()) win.restore();
+      win.focus();
+    }
+  });
+}
 
   
 ipcMain.on('minimize-window', () => {

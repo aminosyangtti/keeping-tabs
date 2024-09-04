@@ -1,0 +1,34 @@
+BUGS TO FIX:
+
+
+1. (FIXED) Canceling delete action would still show notifications
+	App Info:
+		version 1.0.3
+		OS: All platforms
+	
+
+2. "Error fetching data" Error Message at fresh start
+	How to replicate: 
+	- Happened once from new update install from Snapstore
+	App Info:
+		version: 1.0.3
+		OS: OS: Linux x64 6.5.0-45-generic
+
+3. Multiple tabs when switching
+	How to replicate: 
+	- continuous copying in-app
+	App Info:
+		version: 1.0.3
+		OS: Windows
+	
+
+4. Cant check updates
+How to replicate: 
+	- Download the app from Snapstore (Not happening when installed from external i.e. using download .deb .AppImage, and .exe files). 
+	App Info:
+		version: 1.0.3
+		OS: Linux x64 6.5.0-45-generic
+
+
+		
+

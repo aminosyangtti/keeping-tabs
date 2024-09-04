@@ -74,9 +74,10 @@ class ClipboardManager {
 
     try {
       let { data: items, error } = await supabase
-        .from('decrypted_clipboard')
-        .select('*')
-        .eq('user_id', userId);
+        .rpc('get_clipboard', {
+          p_user_id: userId,
+          p_search_term: ''
+        });
 
       if (error) throw error;
 
@@ -110,13 +111,14 @@ class ClipboardManager {
 
   // Method to fetch clipboard data
   async fetch(userId, substring) {
+
     try {
+
       const { data, error } = await supabase
-        .from('decrypted_clipboard')
-        .select('*')
-        .eq('user_id', userId)
-        .ilike('content', `%${substring}%`)
-        .order('created_at', { ascending: false });
+        .rpc('get_clipboard', {
+          p_user_id: userId,
+          p_search_term: substring
+        });
 
       if (error) throw error;
 
@@ -221,8 +223,10 @@ class ClipboardManager {
         const { data, error } = await supabase
           .from('clipboard')
           .delete()
+          .eq('user_id', userId)
           .gte('created_at', startOfToday.toISOString())
-          .lte('created_at', now.toISOString());
+
+
 
         if (error) throw error;
         console.log('Old items deleted from database:', 'from today');
@@ -235,8 +239,10 @@ class ClipboardManager {
         if (error) throw error;
         console.log('Old items deleted from database:', 'all');
       }
+      if (result.response !== 4) {
+        await this.updateData('delete', win);
+      }
 
-      await this.updateData('delete', win);
     } catch (error) {
       console.error('Error deleting old items:', error.message);
     }

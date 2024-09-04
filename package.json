@@ -1,6 +1,6 @@
 {
   "name": "keeping-tabs",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -12,6 +12,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.44.4",
     "auto-changelog": "^2.4.0",
+    "auto-launch": "^5.0.6",
     "electron-log": "^5.1.7",
     "electron-store": "^10.0.0",
     "electron-updater": "^6.2.1"
@@ -24,9 +25,12 @@
     "appId": "com.aminosyangtti.keeping-tabs",
     "productName": "Keeping Tabs",
     "nsis": {
-      "perMachine": true,
-      "allowElevation": true
-    },
+        "oneClick": false,
+        "allowToChangeInstallationDirectory": true,
+        "createDesktopShortcut": true,
+        "createStartMenuShortcut": true,
+        "shortcutName": "Keeping Tabs"
+      },
     "directories": {
       "output": "dist",
       "buildResources": "build"
@@ -43,17 +47,26 @@
         "nsis",
         "portable"
       ],
-      "icon": "build/icon.png"
+      "icon": "build/icon.ico"
     },
     "linux": {
       "target": [
         "AppImage",
         "deb",
-        "snap"
+        "snap",
+        "rpm"
       ],
-      "icon": "build/icon.png"
+      "icon": "build/icon.png",
+      "category": "Utility",
+      "desktop": {
+        "StartupWMClass": "Keeping Tabs"
+      }
     },
     "mac": {
+      "category": "public.app-category.utilities",
+      "extendInfo": {
+        "LSUIElement": 1
+      },
       "target": [
         "dmg",
         "zip"
