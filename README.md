@@ -53,8 +53,8 @@
 
  ### For Windows:
   > download: 
-   - [Setup](https://github.com/aminosyangtti/keeping-tabs/releases/download/v1.0.3/Keeping-Tabs-Setup-1.0.3.exe)
-   - [portable version](https://github.com/aminosyangtti/keeping-tabs/releases/download/v1.0.3/Keeping-Tabs-1.0.3.exe)
+   - [Setup](https://github.com/aminosyangtti/keeping-tabs/releases/download/v1.0.4/Keeping-Tabs-Setup-1.0.4.exe)
+   - [portable version](https://github.com/aminosyangtti/keeping-tabs/releases/download/v1.0.4/Keeping-Tabs-1.0.4.exe)
     
  ### For Linux:
   
@@ -75,4 +75,4 @@ sudo snap install keeping-tabs
  ### For MacOS:
   
   > download: 
-  - [.dmg](https://github.com/aminosyangtti/keeping-tabs/releases/download/v1.0.3/Keeping-Tabs-1.0.3-arm64.dmg) (untested)
+  - [.dmg](https://github.com/aminosyangtti/keeping-tabs/releases/download/v1.0.4/Keeping-Tabs-1.0.4-arm64.dmg) (untested)
